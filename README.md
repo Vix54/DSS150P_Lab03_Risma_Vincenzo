@@ -5,7 +5,7 @@ Author: Vincenzo Risma
 
 ## 1. Overview
 
-This repository implements an e-commerce sales pipeline that converts three source files (`customers.csv`, `products.json`, `orders.csv`) into a curated sales-order-line dataset in PostgreSQL. The design separates raw snapshots, staging, curated output and quarantined records. It is reproducible, safe to rerun and validated after every run. Storage benchmarking, partitioning and Apache Airflow orchestration are planned for the next goals.
+This repository implements an e-commerce sales pipeline that converts three source files (`customers.csv`, `products.json`, `orders.csv`) into a curated sales-order-line dataset in PostgreSQL. The design separates raw snapshots, staging, curated output and quarantined records. It is reproducible, safe to rerun and validated after every run. It also benchmarks CSV, JSON Lines, Parquet and PostgreSQL on the curated data, writes a partitioned Parquet dataset and can load a single monthly partition. Apache Airflow orchestration is planned for the next goal.
 
 ## 2. Current Status
 
@@ -13,7 +13,7 @@ This repository implements an e-commerce sales pipeline that converts three sour
 |---|---|---|
 | 1 | Reproducible environment, externalized configuration, Docker Compose | Complete |
 | 2 | Raw, staging, curated and quarantine layers; audit; rerun-safe PostgreSQL load; validation | Complete |
-| 3 | Storage format benchmark, partitioned Parquet, selected-partition load | Not started |
+| 3 | Storage format benchmark, partitioned Parquet, selected-partition load | Complete |
 | 4 | Airflow DAG with schedule, parameters, retries and failure recovery | Not started |
 
 ## 3. Tested Environment
@@ -132,7 +132,7 @@ docker exec dss150p-postgres psql -U dss150p -d dss150p -c "\dt curated.*"
 docker exec dss150p-postgres psql -U dss150p -d dss150p -c "\dt audit.*"
 ```
 
-Expected: the schemas `audit`, `curated`, `public` and `staging`; the table `curated.sales_order_lines`; and the tables `audit.partition_loads` and `audit.pipeline_runs`. The commands assume the default user and database from `.env.example`.
+Expected: the schemas `audit`, `curated`, `public` and `staging` (plus `benchmark` once the benchmark has run); the table `curated.sales_order_lines`; and the tables `audit.partition_loads` and `audit.pipeline_runs`. The commands assume the default user and database from `.env.example`.
 
 ### 5.4 Apply the table constraints to an existing database
 
@@ -172,6 +172,8 @@ python -m src.cli run-all
 | `load` | Upserts the curated rows into `curated.sales_order_lines` on `order_id`, updating a row only when its `record_hash` differs, and records the run in `audit.pipeline_runs` | Newest complete curated run |
 | `validate` | Read-only checks: source and raw hashes, row counts across layers, curated rules V-01 to V-10, and V-11 plus hash match and audit row in PostgreSQL | Newest complete curated run |
 | `run-all` | Runs the four stages above in order | A new ID is generated |
+| `benchmark` | Compares storage formats and PostgreSQL on a curated run and writes the partitioned dataset (section 6.6). `--repeats` must be at least 5 | Newest complete curated run |
+| `load-partition --year Y --month M` | Loads one monthly partition through the same hash-guarded upsert and records it in `audit.partition_loads` (section 6.6) | Uses the run recorded in the partitioned dataset |
 
 ### 6.3 Output layout
 
@@ -180,10 +182,12 @@ data/
 ├── raw/run_id=<id>/          three source copies, manifest.json, _SUCCESS.json
 ├── staging/run_id=<id>/      customers.parquet, products.parquet, orders.parquet, _SUCCESS.json
 ├── curated/run_id=<id>/      sales_order_lines.parquet, _SUCCESS.json
-└── quarantine/run_id=<id>/   staging.parquet, curated.parquet
+├── quarantine/run_id=<id>/   staging.parquet, curated.parquet
+├── benchmarks/               benchmark_results.csv and benchmark_details.json (tracked), files/ (generated)
+└── partitioned/              order_year=<year>/order_month=<month>/part-0.parquet, _SUCCESS.json
 ```
 
-These folders are generated and excluded from Git. `data/source/` holds the source files and is never modified.
+The raw, staging, curated, quarantine and partitioned folders and `data/benchmarks/files/` are generated and excluded from Git. `data/source/` holds the source files and is never modified.
 
 ### 6.4 Rerun behaviour
 
@@ -203,6 +207,19 @@ python -m src.cli run-all
 
 On the tested machine the rebuild reported `inserted=0 updated=0 unchanged=49897`, because the rebuilt rows hash identically to the rows already loaded (`docs/evidence/goal2_cleanroom.txt`).
 
+### 6.6 Benchmark and partitions
+
+```
+python -m src.cli benchmark --repeats 5
+python -m src.cli load-partition --year 2026 --month 1
+```
+
+`benchmark` needs the PostgreSQL container running. For each of CSV, JSON Lines, Parquet with snappy and Parquet with zstd it writes the curated rows and times the write, a full read and a filtered read (`status = 'DELIVERED'`) as the median of 5 runs after a discarded warm-up. It reads each file back and recomputes every `record_hash` to prove the formats hold the same rows. For PostgreSQL it uses a scratch table, `benchmark.sales_order_lines_bench`, without and with an index on `status`; that table is dropped and recreated on every run and stays afterwards (`DROP SCHEMA benchmark CASCADE` removes it). The results go to `data/benchmarks/benchmark_results.csv`, with all runs, query plans and checks in `data/benchmarks/benchmark_details.json`.
+
+The same command deletes and rewrites `data/partitioned/` as Parquet partitioned by `order_year` and `order_month`, derived from `order_timestamp` in UTC, and times a one-partition read against a whole-dataset read. The partition compared is set in `config/settings.yml` under `storage_benchmark.selected_partition`.
+
+`load-partition` reads one partition, checks that every row belongs to that month, upserts the rows and refreshes the `audit.partition_loads` row for the key `YYYY-MM` in the same transaction. It stops with an error if the partitioned dataset or the partition does not exist. Running it again changes nothing.
+
 ## 7. Data Rules and Results
 
 The rules are listed with their evidence in `docs/data_quality_rules.md`: latest version per business key, text normalization, UTC timestamps, quarantine reasons, exact decimal amounts with half-up rounding, and the columns covered by `record_hash`. Counts from the verified run:
@@ -216,17 +233,32 @@ The rules are listed with their evidence in `docs/data_quality_rules.md`: latest
 
 The curated layer holds 49897 rows, and the curated stage quarantined 101 more orders (99 whose product was rejected, 1 with an unknown customer and 1 with an unknown product). The quarantine total is 104 records.
 
+### 7.1 Storage benchmark summary
+
+Medians of 5 runs on the tested machine, for the 49,897 curated rows (the full method, results and interpretation are in `docs/benchmark_report.md`). These are measurements from one machine, not general claims.
+
+| Storage | Size (bytes) | Full read (s) | Filtered read (s) |
+|---|---|---|---|
+| CSV | 14,181,711 | 0.251 | 0.243 |
+| JSON Lines | 30,467,326 | 0.656 | 0.713 |
+| Parquet, snappy | 5,396,477 | 0.113 | 0.036 |
+| Parquet, zstd | 3,421,025 | 0.108 | 0.033 |
+| PostgreSQL | 15,261,696 | 1.158 | 0.186 |
+| PostgreSQL with an index on `status` | 15,605,760 | 1.183 | 0.190 |
+
+Reading one of the 21 monthly partitions (2,506 rows) took 0.0153 s against 0.1218 s for the whole partitioned dataset.
+
 ## 8. Testing
 
 ```
 python -m pytest -q
 ```
 
-The 36 unit tests need no database. They cover run IDs, raw extraction, staging rules, the curated join and amounts, `record_hash`, the validation rules and integrity checks, and error wrapping. `load` and `validate` need the PostgreSQL container running.
+The 46 unit tests need no database. They cover run IDs, raw extraction, staging rules, the curated join and amounts, `record_hash`, the validation rules and integrity checks, error wrapping, the benchmark timing helper, format round trips and partition handling. `load`, `validate`, `benchmark` and `load-partition` need the PostgreSQL container running.
 
 ## 9. Configuration Model
 
-- `config/settings.yml` holds non-secret defaults: the directory for each data layer, the source file list, allowed order statuses, quantity bounds and benchmark settings.
+- `config/settings.yml` holds non-secret defaults: the directory for each data layer, the source file list, allowed order statuses, quantity bounds, benchmark settings and the selected partition.
 - `.env` holds environment-specific and secret values. Only `.env.example`, with a placeholder, is committed.
 - `src/config.py` is the single place that reads both sources. It raises an error when a required database variable is missing instead of falling back to a default.
 - `docker-compose.yml` fails at startup when `POSTGRES_PASSWORD` is unset.
@@ -237,9 +269,12 @@ The 36 unit tests need no database. They cover run IDs, raw extraction, staging 
 .
 ├── config/settings.yml
 ├── dags/dss150p_pipeline.py
-├── data/source/                 source files (tracked, never modified)
+├── data/
+│   ├── source/                  source files (tracked, never modified)
+│   └── benchmarks/              benchmark results (tracked); files/ is generated
 ├── docs/
 │   ├── evidence/                command output recorded for each goal
+│   ├── benchmark_report.md
 │   ├── data_quality_rules.md
 │   ├── technical_answers.md
 │   └── run_evidence.md
@@ -247,7 +282,8 @@ The 36 unit tests need no database. They cover run IDs, raw extraction, staging 
 ├── sql/init/                    database bootstrap and constraints
 ├── src/
 │   ├── common/                  run IDs, hashing, errors, logging, environment check
-│   ├── extract/  transform/  load/  validate/  benchmark/
+│   ├── extract/  transform/  load/  validate/
+│   ├── benchmark/               timing, formats, partitions, PostgreSQL benchmark
 │   ├── cli.py
 │   └── config.py
 ├── templates/
@@ -278,6 +314,14 @@ The 36 unit tests need no database. They cover run IDs, raw extraction, staging 
 | `docs/evidence/goal2_audit_sample.txt` | Sample of the curated audit columns |
 | `docs/evidence/goal2_validate_runall.txt` | `validate`, `run-all`, the lab's `run-all` then `load` twice, and a database failure |
 | `docs/evidence/goal2_cleanroom.txt` | Deletion of the generated layers and reproducible rebuild |
+| `docs/evidence/goal3_machine_context.txt` | Hardware, operating system and software context for the benchmark |
+| `docs/evidence/goal3_benchmark.txt` | Benchmark run, verification results, plans, partition tree and SQL cross-checks |
+| `docs/evidence/goal3_parquet_columns.txt` | Compressed size of every column in the two Parquet files |
+| `docs/evidence/goal3_load_partition.txt` | Partition load, rerun, audit row and a missing partition |
+| `docs/evidence/goal3_load_partition_restore.txt` | Month deleted from the table, restored by the partition load, then validated |
+| `data/benchmarks/benchmark_results.csv` | Benchmark medians per storage system |
+| `data/benchmarks/benchmark_details.json` | All runs, plans, sizes and partition figures |
+| `docs/benchmark_report.md` | Benchmark methodology, results and interpretation |
 
 To confirm the source files are unchanged:
 
@@ -289,13 +333,13 @@ sha256sum -c docs/evidence/source_sha256.txt
 
 | Command | Status |
 |---|---|
-| `validate-env`, `extract`, `transform`, `load`, `validate`, `run-all` | Implemented |
-| `benchmark`, `load-partition` | Planned. They currently raise `NotImplementedError` |
+| `validate-env`, `extract`, `transform`, `load`, `validate`, `run-all`, `benchmark`, `load-partition` | Implemented |
 
 ## 13. Known Limitations
 
 - The load decides whether a row changed by comparing `record_hash` values. A row edited directly in PostgreSQL without updating its hash looks unchanged to the load; `validate` detects it by recomputing the hash from the stored values.
 - Only `validate-env` has been verified inside the pipeline container. Files written by a container into the bind-mounted `data/` folder would be owned by root.
+- Benchmark timings are warm-cache measurements from one machine and one dataset of about 14 MB, so small differences fall within run-to-run variation.
 
 ## 14. Troubleshooting
 
@@ -313,3 +357,6 @@ sha256sum -c docs/evidence/source_sha256.txt
 | `ERROR cli [run-id] no complete run found in raw_dir` | `transform` was run before any `extract` | Run `extract` first, or use `run-all` |
 | `ERROR cli [transform] several versions share the greatest updated_at` | Two versions of one record have the same `updated_at`, and the pipeline refuses to guess | Resolve the tie in the source data or amend the rule in `docs/data_quality_rules.md` |
 | `ERROR cli [validate] … no longer match their own record_hash` | A stored row was edited outside the pipeline | Inspect the row; to let the load repair it, set its `record_hash` to a different value and run `load` again |
+| `ERROR cli [benchmark] --repeats must be at least 5` | `--repeats` was set below the minimum needed for a meaningful median | Use `--repeats 5` or more |
+| `ERROR cli [load-partition] no partitioned dataset found` | `benchmark` has not written `data/partitioned/` yet | Run `python -m src.cli benchmark --repeats 5` first |
+| `ERROR cli [load-partition] partition … does not exist or has no rows` | No orders fall in that year and month | Choose a month listed under `data/partitioned/` |
