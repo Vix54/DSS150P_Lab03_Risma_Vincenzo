@@ -1,0 +1,111 @@
+ Image dss150p_lab03_risma_vincenzo-pipeline Building 
+#1 [internal] load local bake definitions
+#1 reading from stdin 604B done
+#1 DONE 0.0s
+
+#2 [internal] load build definition from Dockerfile
+#2 transferring dockerfile: 283B done
+#2 DONE 0.0s
+
+#3 [internal] load metadata for docker.io/library/python:3.11-slim
+#3 ...
+
+#4 [auth] library/python:pull token for registry-1.docker.io
+#4 DONE 0.0s
+
+#3 [internal] load metadata for docker.io/library/python:3.11-slim
+#3 DONE 2.1s
+
+#5 [internal] load .dockerignore
+#5 transferring context: 194B done
+#5 DONE 0.0s
+
+#6 [internal] load build context
+#6 transferring context: 5.19kB 0.0s done
+#6 DONE 0.0s
+
+#7 [1/5] FROM docker.io/library/python:3.11-slim@sha256:da047cb8f9d1d98e5c070f5300ba9f7274e33b8fc0e5be5ed88740aed1b95ba9
+#7 resolve docker.io/library/python:3.11-slim@sha256:da047cb8f9d1d98e5c070f5300ba9f7274e33b8fc0e5be5ed88740aed1b95ba9 0.0s done
+#7 DONE 0.0s
+
+#8 [2/5] WORKDIR /app
+#8 CACHED
+
+#9 [3/5] COPY requirements.txt /app/requirements.txt
+#9 DONE 0.0s
+
+#10 [4/5] RUN pip install --no-cache-dir -r /app/requirements.txt
+#10 1.970 Collecting pandas==2.2.3 (from -r /app/requirements.txt (line 1))
+#10 2.105   Downloading pandas-2.2.3-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (89 kB)
+#10 2.149      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 89.9/89.9 kB 2.0 MB/s eta 0:00:00
+#10 2.277 Collecting pyarrow==17.0.0 (from -r /app/requirements.txt (line 2))
+#10 2.316   Downloading pyarrow-17.0.0-cp311-cp311-manylinux_2_28_x86_64.whl.metadata (3.3 kB)
+#10 2.392 Collecting psycopg==3.2.3 (from psycopg[binary]==3.2.3->-r /app/requirements.txt (line 3))
+#10 2.427   Downloading psycopg-3.2.3-py3-none-any.whl.metadata (4.3 kB)
+#10 2.488 Collecting python-dotenv==1.0.1 (from -r /app/requirements.txt (line 4))
+#10 2.526   Downloading python_dotenv-1.0.1-py3-none-any.whl.metadata (23 kB)
+#10 2.607 Collecting PyYAML==6.0.2 (from -r /app/requirements.txt (line 5))
+#10 2.642   Downloading PyYAML-6.0.2-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (2.1 kB)
+#10 2.978 Collecting numpy>=1.23.2 (from pandas==2.2.3->-r /app/requirements.txt (line 1))
+#10 3.016   Downloading numpy-2.4.6-cp311-cp311-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (6.6 kB)
+#10 3.079 Collecting python-dateutil>=2.8.2 (from pandas==2.2.3->-r /app/requirements.txt (line 1))
+#10 3.115   Downloading python_dateutil-2.9.0.post0-py2.py3-none-any.whl.metadata (8.4 kB)
+#10 3.190 Collecting pytz>=2020.1 (from pandas==2.2.3->-r /app/requirements.txt (line 1))
+#10 3.228   Downloading pytz-2026.3.post1-py2.py3-none-any.whl.metadata (22 kB)
+#10 3.282 Collecting tzdata>=2022.7 (from pandas==2.2.3->-r /app/requirements.txt (line 1))
+#10 3.316   Downloading tzdata-2026.4-py2.py3-none-any.whl.metadata (1.4 kB)
+#10 3.394 Collecting typing-extensions>=4.6 (from psycopg==3.2.3->psycopg[binary]==3.2.3->-r /app/requirements.txt (line 3))
+#10 3.427   Downloading typing_extensions-4.16.0-py3-none-any.whl.metadata (3.3 kB)
+#10 3.668 Collecting psycopg-binary==3.2.3 (from psycopg[binary]==3.2.3->-r /app/requirements.txt (line 3))
+#10 3.703   Downloading psycopg_binary-3.2.3-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (2.8 kB)
+#10 3.757 Collecting six>=1.5 (from python-dateutil>=2.8.2->pandas==2.2.3->-r /app/requirements.txt (line 1))
+#10 3.793   Downloading six-1.17.0-py2.py3-none-any.whl.metadata (1.7 kB)
+#10 3.852 Downloading pandas-2.2.3-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (13.1 MB)
+#10 4.670    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 13.1/13.1 MB 16.2 MB/s eta 0:00:00
+#10 4.707 Downloading pyarrow-17.0.0-cp311-cp311-manylinux_2_28_x86_64.whl (39.9 MB)
+#10 7.214    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 39.9/39.9 MB 18.3 MB/s eta 0:00:00
+#10 7.249 Downloading psycopg-3.2.3-py3-none-any.whl (197 kB)
+#10 7.267    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 197.9/197.9 kB 12.7 MB/s eta 0:00:00
+#10 7.301 Downloading python_dotenv-1.0.1-py3-none-any.whl (19 kB)
+#10 7.335 Downloading PyYAML-6.0.2-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (762 kB)
+#10 7.403    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 763.0/763.0 kB 11.7 MB/s eta 0:00:00
+#10 7.438 Downloading psycopg_binary-3.2.3-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (4.2 MB)
+#10 7.846    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 4.2/4.2 MB 10.4 MB/s eta 0:00:00
+#10 7.882 Downloading numpy-2.4.6-cp311-cp311-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (16.9 MB)
+#10 9.056    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 16.9/16.9 MB 14.7 MB/s eta 0:00:00
+#10 9.089 Downloading python_dateutil-2.9.0.post0-py2.py3-none-any.whl (229 kB)
+#10 9.102    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 229.9/229.9 kB 24.0 MB/s eta 0:00:00
+#10 9.138 Downloading pytz-2026.3.post1-py2.py3-none-any.whl (508 kB)
+#10 9.161    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 508.3/508.3 kB 24.9 MB/s eta 0:00:00
+#10 9.195 Downloading typing_extensions-4.16.0-py3-none-any.whl (45 kB)
+#10 9.200    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 45.6/45.6 kB 19.1 MB/s eta 0:00:00
+#10 9.234 Downloading tzdata-2026.4-py2.py3-none-any.whl (347 kB)
+#10 9.249    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 347.5/347.5 kB 29.6 MB/s eta 0:00:00
+#10 9.283 Downloading six-1.17.0-py2.py3-none-any.whl (11 kB)
+#10 9.493 Installing collected packages: pytz, tzdata, typing-extensions, six, PyYAML, python-dotenv, psycopg-binary, numpy, python-dateutil, pyarrow, psycopg, pandas
+#10 15.81 Successfully installed PyYAML-6.0.2 numpy-2.4.6 pandas-2.2.3 psycopg-3.2.3 psycopg-binary-3.2.3 pyarrow-17.0.0 python-dateutil-2.9.0.post0 python-dotenv-1.0.1 pytz-2026.3.post1 six-1.17.0 typing-extensions-4.16.0 tzdata-2026.4
+#10 15.81 WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv
+#10 15.98 
+#10 15.98 [notice] A new release of pip is available: 24.0 -> 26.2.1
+#10 15.98 [notice] To update, run: pip install --upgrade pip
+#10 DONE 16.6s
+
+#11 [5/5] COPY . /app
+#11 DONE 0.1s
+
+#12 exporting to image
+#12 exporting layers
+#12 exporting layers 8.9s done
+#12 exporting manifest sha256:473dde9d3a793d8d2bde8b81ae3db5ce0366d65a1fbfcaac08eccb98910e25d6 0.0s done
+#12 exporting config sha256:c9dda87ad82bf5ea1981c7926bb830f178c9cdea0ed60d8cfb5c2a10b7ddacd6 0.0s done
+#12 exporting attestation manifest sha256:1a3a85adb58838325962a55310b36bf28fa0c93ddf6930de0b461d2da145ce12 0.0s done
+#12 exporting manifest list sha256:77520268c0e6d6ea9359e3e430b928456680baddb7f3270d461bf8396dd69954
+#12 exporting manifest list sha256:77520268c0e6d6ea9359e3e430b928456680baddb7f3270d461bf8396dd69954 0.0s done
+#12 naming to docker.io/library/dss150p_lab03_risma_vincenzo-pipeline:latest done
+#12 unpacking to docker.io/library/dss150p_lab03_risma_vincenzo-pipeline:latest
+#12 unpacking to docker.io/library/dss150p_lab03_risma_vincenzo-pipeline:latest 1.8s done
+#12 DONE 10.9s
+
+#13 resolving provenance for metadata file
+#13 DONE 0.0s
+ Image dss150p_lab03_risma_vincenzo-pipeline Built 

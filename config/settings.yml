@@ -1,5 +1,6 @@
 pipeline:
   source_dir: data/source
+  source_files: [customers.csv, products.json, orders.csv]
   raw_dir: data/raw
   staging_dir: data/staging
   curated_dir: data/curated
