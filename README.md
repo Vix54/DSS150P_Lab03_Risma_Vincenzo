@@ -136,10 +136,11 @@ Expected: the schemas `audit`, `curated`, `public` and `staging` (plus `benchmar
 
 ### 5.4 Apply the table constraints to an existing database
 
-`sql/init/02_curated_constraints.sql` adds the `CHECK` constraints to `curated.sales_order_lines` (quantity range, non-negative prices and amounts, discount range, net amount formula, allowed statuses, hash length). A new volume runs it automatically. A volume created earlier needs it applied once; the script is idempotent:
+`sql/init/02_curated_constraints.sql` adds the `CHECK` constraints to `curated.sales_order_lines` (quantity range, non-negative prices and amounts, discount range, net amount formula, allowed statuses, hash length), and `sql/init/03_audit_events.sql` creates the append-only table `audit.pipeline_run_events`, where update, delete and truncate are rejected by triggers. A new volume runs both automatically. A volume created earlier needs them applied once; both scripts are idempotent:
 
 ```
 docker exec -i dss150p-postgres psql -U dss150p -d dss150p -v ON_ERROR_STOP=1 < sql/init/02_curated_constraints.sql
+docker exec -i dss150p-postgres psql -U dss150p -d dss150p -v ON_ERROR_STOP=1 < sql/init/03_audit_events.sql
 ```
 
 ### 5.5 Container names
@@ -170,10 +171,10 @@ python -m src.cli run-all
 | `extract` | Copies the three source files byte for byte into `data/raw/run_id=<id>/` and writes a manifest with the SHA-256 of each file and an `_ingested_at_utc` timestamp | A new ID is generated |
 | `transform` | Builds the staging layer, then the curated layer, and writes quarantine records | Newest complete raw run |
 | `load` | Upserts the curated rows into `curated.sales_order_lines` on `order_id`, updating a row only when its `record_hash` differs, and records the run in `audit.pipeline_runs` | Newest complete curated run |
-| `validate` | Read-only checks: source and raw hashes, row counts across layers, curated rules V-01 to V-10, and V-11 plus hash match and audit row in PostgreSQL | Newest complete curated run |
+| `validate` | Read-only checks: source and raw hashes, row counts across layers, curated rules V-01 to V-10, and V-11 plus hash match, audit row and load event in PostgreSQL. `--year Y --month M` limits the database checks to one month and checks its `audit.partition_loads` row and partition-load event | Newest complete curated run |
 | `run-all` | Runs the four stages above in order | A new ID is generated |
 | `benchmark` | Compares storage formats and PostgreSQL on a curated run and writes the partitioned dataset (section 6.6). `--repeats` must be at least 5 | Newest complete curated run |
-| `load-partition --year Y --month M` | Loads one monthly partition through the same hash-guarded upsert and records it in `audit.partition_loads` (section 6.6) | Uses the run recorded in the partitioned dataset |
+| `load-partition --year Y --month M` | Loads one monthly partition through the same hash-guarded upsert and records it in `audit.partition_loads` and `audit.pipeline_run_events` (section 6.6) | Newest complete curated run |
 
 ### 6.3 Output layout
 
@@ -193,7 +194,9 @@ The raw, staging, curated, quarantine and partitioned folders and `data/benchmar
 
 - `_SUCCESS.json` is written last in each layer folder. A stage that finds it skips its work; for the raw layer it first re-verifies the copies against the manifest hashes.
 - A folder without `_SUCCESS.json` is a half-written output from a failed attempt. It is discarded and rebuilt.
-- A load compares each incoming `record_hash` with the stored one and writes only rows that are new or changed. `record_hash` covers the business columns only, so a new run with unchanged content writes nothing.
+- A load compares each incoming `record_hash` with the stored one and writes only rows that are new or changed. `record_hash` covers the business columns and `source_updated_at` but not the run ID or processing time, so a new run over unchanged source data writes nothing, while a new source version updates its row.
+- Before it writes anything, a load checks the curated output against rules V-01 to V-10, including a recomputed hash. A run built under an older hash definition is refused and must be rebuilt with a new run ID.
+- Every load and partition load also appends a row to `audit.pipeline_run_events`, which is append-only. `audit.pipeline_runs` and `audit.partition_loads` keep the latest outcome per run and partition.
 - A failed stage exits with code 1 and prints `ERROR cli [stage] message`. A database error rolls the load back completely.
 
 ### 6.5 Clean-room rebuild
@@ -218,7 +221,7 @@ python -m src.cli load-partition --year 2026 --month 1
 
 The same command deletes and rewrites `data/partitioned/` as Parquet partitioned by `order_year` and `order_month`, derived from `order_timestamp` in UTC, and times a one-partition read against a whole-dataset read. The partition compared is set in `config/settings.yml` under `storage_benchmark.selected_partition`.
 
-`load-partition` reads one partition, checks that every row belongs to that month, upserts the rows and refreshes the `audit.partition_loads` row for the key `YYYY-MM` in the same transaction. It stops with an error if the partitioned dataset or the partition does not exist. Running it again changes nothing.
+`load-partition` uses the newest complete curated run unless `--run-id` is given. It rebuilds `data/partitioned/` from that run if the dataset came from another run, reads one partition, checks that every row belongs to that month and passes rules V-01 to V-10, upserts the rows, and refreshes the `audit.partition_loads` row for the key `YYYY-MM` and appends an event in the same transaction. It stops with an error if the partition does not exist. Running it again changes nothing. `python -m src.cli validate --year 2026 --month 1` then checks that month against the database.
 
 ## 7. Data Rules and Results
 
@@ -254,7 +257,7 @@ Reading one of the 21 monthly partitions (2,506 rows) took 0.0153 s against 0.12
 python -m pytest -q
 ```
 
-The 46 unit tests need no database. They cover run IDs, raw extraction, staging rules, the curated join and amounts, `record_hash`, the validation rules and integrity checks, error wrapping, the benchmark timing helper, format round trips and partition handling. `load`, `validate`, `benchmark` and `load-partition` need the PostgreSQL container running.
+The 50 unit tests need no database. They cover run IDs, raw extraction, staging rules, the curated join and amounts, `record_hash`, the validation rules and integrity checks, error wrapping, the benchmark timing helper, format round trips and partition handling. `load`, `validate`, `benchmark` and `load-partition` need the PostgreSQL container running.
 
 ## 9. Configuration Model
 
@@ -358,5 +361,6 @@ sha256sum -c docs/evidence/source_sha256.txt
 | `ERROR cli [transform] several versions share the greatest updated_at` | Two versions of one record have the same `updated_at`, and the pipeline refuses to guess | Resolve the tie in the source data or amend the rule in `docs/data_quality_rules.md` |
 | `ERROR cli [validate] … no longer match their own record_hash` | A stored row was edited outside the pipeline | Inspect the row; to let the load repair it, set its `record_hash` to a different value and run `load` again |
 | `ERROR cli [benchmark] --repeats must be at least 5` | `--repeats` was set below the minimum needed for a meaningful median | Use `--repeats 5` or more |
-| `ERROR cli [load-partition] no partitioned dataset found` | `benchmark` has not written `data/partitioned/` yet | Run `python -m src.cli benchmark --repeats 5` first |
+| `ERROR cli [load] … fails the pre-load checks and was not loaded` | The curated output is stale, for example built under an older hash definition, or was altered | Rebuild it with `python -m src.cli run-all --run-id NEW_ID` |
+| `ERROR cli [validate] … does not exist; apply sql/init/03_audit_events.sql` | The audit events table is missing from an older volume | Apply the script as shown in section 5.4 |
 | `ERROR cli [load-partition] partition … does not exist or has no rows` | No orders fall in that year and month | Choose a month listed under `data/partitioned/` |

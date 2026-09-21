@@ -65,15 +65,18 @@ def test_orders_with_unknown_customer_or_product_are_quarantined_with_distinct_r
     assert stats['orders_staged'] == stats['curated_rows'] + stats['quarantined_rows']
 
 
-def test_record_hash_ignores_run_id_processing_time_and_source_updated_at():
+def test_record_hash_ignores_run_id_and_processing_time():
     first, _, _ = build(orders_frame(order_row()))
-    second, _, _ = build(
-        orders_frame(order_row(updated_at=pd.Timestamp('2026-01-01T00:00:00Z'))),
-        run_id='run_b',
-        processed_at=pd.Timestamp('2026-03-01T00:00:00Z'),
-    )
+    second, _, _ = build(orders_frame(order_row()), run_id='run_b', processed_at=pd.Timestamp('2026-03-01T00:00:00Z'))
     assert first.iloc[0]['record_hash'] == second.iloc[0]['record_hash']
     assert first.iloc[0]['pipeline_run_id'] != second.iloc[0]['pipeline_run_id']
+
+
+def test_a_new_source_version_changes_the_hash_even_when_only_updated_at_differs():
+    first, _, _ = build(orders_frame(order_row()))
+    later, _, _ = build(orders_frame(order_row(updated_at=pd.Timestamp('2026-01-01T00:00:00Z'))))
+    assert first.iloc[0]['record_hash'] != later.iloc[0]['record_hash']
+    assert first.iloc[0]['gross_amount'] == later.iloc[0]['gross_amount']
 
 
 def test_record_hash_changes_when_business_content_changes():

@@ -14,16 +14,19 @@ MAX_REPORTED = 10
 logger = logging.getLogger(__name__)
 
 
-def run_validate(run_id):
+def run_validate(run_id, partition=None):
     layer_findings = check_layers(run_id)
     if layer_findings:
         raise PipelineError(STAGE, '; '.join(layer_findings))
     curated = pd.read_parquet(run_dir('curated_dir', run_id) / CURATED_FILE)
+    database_label = 'PostgreSQL V-11, hash match, audit rows and load events'
+    if partition:
+        database_label += f' for partition {partition[0]:04d}-{partition[1]:02d}'
     checks = [
         ('source and raw file hashes', lambda: check_hashes(run_id)),
         ('row counts reconcile across layers', lambda: check_counts(run_id)),
         ('curated rules V-01 to V-10', lambda: validate_curated(curated)),
-        ('PostgreSQL V-11, hash match and audit row', lambda: check_database(curated, run_id)),
+        (database_label, lambda: check_database(curated, run_id, partition)),
     ]
     problems = []
     for name, check in checks:
