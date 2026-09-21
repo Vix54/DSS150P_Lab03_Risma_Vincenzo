@@ -1,0 +1,43 @@
+2026-09-21T20:58:06Z
+sales_order_lines_snappy.parquet: rows=49897, row_groups=1, compressed_column_bytes=5383395
+  record_hash: compressed=3344082, uncompressed=3422394, codec=SNAPPY
+  order_timestamp: compressed=440695, uncompressed=488782, codec=SNAPPY
+  source_updated_at: compressed=440429, uncompressed=488494, codec=SNAPPY
+  order_id: compressed=321591, uncompressed=698734, codec=SNAPPY
+  net_amount: compressed=191328, uncompressed=210005, codec=SNAPPY
+  discount_amount: compressed=122317, uncompressed=149645, codec=SNAPPY
+  gross_amount: compressed=109367, uncompressed=114818, codec=SNAPPY
+  customer_id: compressed=88658, uncompressed=105017, codec=SNAPPY
+  product_name: compressed=67665, uncompressed=75516, codec=SNAPPY
+  unit_price: compressed=65770, uncompressed=66151, codec=SNAPPY
+  product_id: compressed=64891, uncompressed=67930, codec=SNAPPY
+  customer_city: compressed=25232, uncompressed=25235, codec=SNAPPY
+  category: compressed=18975, uncompressed=18970, codec=SNAPPY
+  brand: compressed=18958, uncompressed=18955, codec=SNAPPY
+  status: compressed=18957, uncompressed=18950, codec=SNAPPY
+  quantity: compressed=18926, uncompressed=18918, codec=SNAPPY
+  customer_tier: compressed=12690, uncompressed=12684, codec=SNAPPY
+  discount_pct: compressed=12667, uncompressed=12660, codec=SNAPPY
+  processed_at_utc: compressed=102, uncompressed=98, codec=SNAPPY
+  pipeline_run_id: compressed=95, uncompressed=91, codec=SNAPPY
+sales_order_lines_zstd.parquet: rows=49897, row_groups=1, compressed_column_bytes=3407973
+  record_hash: compressed=1723439, uncompressed=3422391, codec=ZSTD
+  order_timestamp: compressed=402124, uncompressed=488782, codec=ZSTD
+  source_updated_at: compressed=401941, uncompressed=488494, codec=ZSTD
+  net_amount: compressed=163971, uncompressed=210005, codec=ZSTD
+  order_id: compressed=125694, uncompressed=698734, codec=ZSTD
+  gross_amount: compressed=101656, uncompressed=114818, codec=ZSTD
+  discount_amount: compressed=93277, uncompressed=149645, codec=ZSTD
+  customer_id: compressed=82456, uncompressed=105016, codec=ZSTD
+  product_name: compressed=66058, uncompressed=75516, codec=ZSTD
+  unit_price: compressed=64856, uncompressed=66151, codec=ZSTD
+  product_id: compressed=63777, uncompressed=67930, codec=ZSTD
+  customer_city: compressed=21237, uncompressed=25235, codec=ZSTD
+  category: compressed=18980, uncompressed=18970, codec=ZSTD
+  brand: compressed=18965, uncompressed=18955, codec=ZSTD
+  quantity: compressed=18937, uncompressed=18918, codec=ZSTD
+  status: compressed=17852, uncompressed=18949, codec=ZSTD
+  discount_pct: compressed=11499, uncompressed=12660, codec=ZSTD
+  customer_tier: compressed=11029, uncompressed=12684, codec=ZSTD
+  processed_at_utc: compressed=116, uncompressed=98, codec=ZSTD
+  pipeline_run_id: compressed=109, uncompressed=91, codec=ZSTD
