@@ -35,6 +35,17 @@ def run_extract(args):
     print(f'raw_dir={display_path(raw_dir)}')
 
 
+def run_transform(args):
+    from src.common.runs import resolve_run_id_for_stage
+    from src.config import display_path
+    from src.transform.stages import run_staging
+
+    run_id = resolve_run_id_for_stage(args.run_id, 'raw_dir')
+    staging_dir = run_staging(run_id)
+    print(f'run_id={run_id}')
+    print(f'staging_dir={display_path(staging_dir)}')
+
+
 def dispatch(args):
     if args.command == 'validate-env':
         problems = check_environment()
@@ -46,6 +57,9 @@ def dispatch(args):
         return
     if args.command == 'extract':
         run_extract(args)
+        return
+    if args.command == 'transform':
+        run_transform(args)
         return
     raise NotImplementedError(f'Wire command: {args.command}')
 

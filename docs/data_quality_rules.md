@@ -4,7 +4,7 @@
 
 1. Every rule is tied to an observation in `docs/evidence/goal2_profiling.txt` or to a bound given by the lab and stored in `config/settings.yml` under `quality`. A rule with neither is not enforced.
 2. A record that breaks a rule is a data-quality failure: it is quarantined with a reason code. A missing file, an unreachable database or an unexpected schema is a system failure: it raises an exception and stops the run.
-3. Source files are never edited, and no record is removed without a quarantine row.
+3. Source files are never edited. No invalid record is dropped without a quarantine row, and superseded versions are counted, so for every source the raw row count equals staged rows plus superseded rows plus quarantined rows.
 4. Every timestamp is parsed and stored in UTC.
 
 ## 2. Duplicate versions
@@ -55,6 +55,18 @@ No repeated key is an exact copy. Each pair holds an older and a newer version o
 | O-05 | Add `pipeline_run_id` and `staged_at_utc` | Audit | Lab requirement |
 
 `customer_id`, `product_id`, `unit_price` and `discount_pct` are carried unchanged. Observed `unit_price` minimum is 160.67, and `discount_pct` takes only the values 0.0, 0.05, 0.1 and 0.15.
+
+### 3.4 Technical failures
+
+The lab asks for invalid technical records to be quarantined. Three generic checks apply to every source; none of them fired on the current data (0 unparseable timestamps, 0 blank keys, 0 non-numeric amounts).
+
+| ID | Rule | Action |
+|---|---|---|
+| T-01 | A blank business key | Quarantine `business_key_missing` |
+| T-02 | A timestamp that is not ISO 8601 | Quarantine `timestamp_invalid` |
+| T-03 | An order whose `unit_price` or `discount_pct` is not numeric | Quarantine `order_amount_field_invalid` |
+
+Versions are resolved before value rules are applied, so an older version that would have failed a rule but was superseded is counted as superseded, not quarantined.
 
 ## 4. Curated rules
 
