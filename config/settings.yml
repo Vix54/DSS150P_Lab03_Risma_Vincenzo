@@ -13,6 +13,7 @@ storage_benchmark:
   json_lines: true
   filter_status: DELIVERED
   partition_columns: [order_year, order_month]
+  selected_partition: {year: 2026, month: 1}
 quality:
   allowed_order_statuses: [PENDING, PAID, PACKED, SHIPPED, DELIVERED, CANCELLED]
   min_quantity: 1

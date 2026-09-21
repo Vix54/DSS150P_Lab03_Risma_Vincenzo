@@ -1,0 +1,362 @@
+{
+  "csv": {
+    "file": "sales_order_lines.csv",
+    "file_size_bytes": 14181711,
+    "write": {
+      "median": 0.9753299730000435,
+      "min": 0.9560717890017258,
+      "max": 1.0222529399979976,
+      "runs": [
+        0.9753299730000435,
+        0.9560717890017258,
+        0.975433535000775,
+        1.0222529399979976,
+        0.9666610849999415
+      ]
+    },
+    "full_read": {
+      "median": 0.25064708999707364,
+      "min": 0.22708490200238884,
+      "max": 0.2604065529994841,
+      "runs": [
+        0.25064708999707364,
+        0.2604065529994841,
+        0.22708490200238884,
+        0.2547643129983044,
+        0.24705957700280123
+      ]
+    },
+    "filtered_read": {
+      "median": 0.24268242199832457,
+      "min": 0.23578803899727063,
+      "max": 0.24823167600334273,
+      "runs": [
+        0.24268242199832457,
+        0.24793965000208118,
+        0.23578803899727063,
+        0.24823167600334273,
+        0.24032323099891073
+      ]
+    },
+    "row_count": 49897,
+    "filtered_rows": 8355,
+    "hash_mismatches": 0,
+    "same_row_set": true
+  },
+  "jsonl": {
+    "file": "sales_order_lines.jsonl",
+    "file_size_bytes": 30467326,
+    "write": {
+      "median": 0.9984614179993514,
+      "min": 0.895597786999133,
+      "max": 1.0659457809997548,
+      "runs": [
+        0.9984614179993514,
+        0.895597786999133,
+        1.0497095829996397,
+        1.0659457809997548,
+        0.9352171729988186
+      ]
+    },
+    "full_read": {
+      "median": 0.6561547530000098,
+      "min": 0.6030176550011674,
+      "max": 0.7867670569976326,
+      "runs": [
+        0.7867670569976326,
+        0.6500901529980183,
+        0.6561547530000098,
+        0.6030176550011674,
+        0.7365817800018704
+      ]
+    },
+    "filtered_read": {
+      "median": 0.7125782469993283,
+      "min": 0.6752975770032208,
+      "max": 0.7478745730004448,
+      "runs": [
+        0.7125782469993283,
+        0.7478745730004448,
+        0.6752975770032208,
+        0.6955464190032217,
+        0.7129250479993061
+      ]
+    },
+    "row_count": 49897,
+    "filtered_rows": 8355,
+    "hash_mismatches": 0,
+    "same_row_set": true
+  },
+  "parquet_snappy": {
+    "file": "sales_order_lines_snappy.parquet",
+    "file_size_bytes": 5396477,
+    "write": {
+      "median": 0.1785754159973294,
+      "min": 0.17290052399766864,
+      "max": 0.1921643790010421,
+      "runs": [
+        0.1921643790010421,
+        0.18132273299852386,
+        0.1785754159973294,
+        0.17350940199685283,
+        0.17290052399766864
+      ]
+    },
+    "full_read": {
+      "median": 0.11320574300043518,
+      "min": 0.09582547299942235,
+      "max": 0.12657943600061117,
+      "runs": [
+        0.11940045799929067,
+        0.1042112819995964,
+        0.11320574300043518,
+        0.09582547299942235,
+        0.12657943600061117
+      ]
+    },
+    "filtered_read": {
+      "median": 0.03554768800313468,
+      "min": 0.03204444400034845,
+      "max": 0.038249807999818586,
+      "runs": [
+        0.03435469300166005,
+        0.036272453999117715,
+        0.03554768800313468,
+        0.038249807999818586,
+        0.03204444400034845
+      ]
+    },
+    "row_count": 49897,
+    "filtered_rows": 8355,
+    "hash_mismatches": 0,
+    "same_row_set": true
+  },
+  "parquet_zstd": {
+    "file": "sales_order_lines_zstd.parquet",
+    "file_size_bytes": 3421025,
+    "write": {
+      "median": 0.18270633700012695,
+      "min": 0.17485146800026996,
+      "max": 0.19199121099882177,
+      "runs": [
+        0.18736062600146397,
+        0.19199121099882177,
+        0.17679679399952875,
+        0.17485146800026996,
+        0.18270633700012695
+      ]
+    },
+    "full_read": {
+      "median": 0.10843891799959238,
+      "min": 0.10131348399954732,
+      "max": 0.11796869400131982,
+      "runs": [
+        0.11796869400131982,
+        0.10767158700036816,
+        0.10872258200106444,
+        0.10131348399954732,
+        0.10843891799959238
+      ]
+    },
+    "filtered_read": {
+      "median": 0.03260965999652399,
+      "min": 0.03075210099996184,
+      "max": 0.03994451700054924,
+      "runs": [
+        0.03994451700054924,
+        0.033422708002035506,
+        0.03075210099996184,
+        0.032158943999093026,
+        0.03260965999652399
+      ]
+    },
+    "row_count": 49897,
+    "filtered_rows": 8355,
+    "hash_mismatches": 0,
+    "same_row_set": true
+  },
+  "postgresql": {
+    "plain": {
+      "sizes": {
+        "total_bytes": 15261696,
+        "table_bytes": 13631488,
+        "index_bytes": 1589248
+      },
+      "write": {
+        "median": 1.0367790919990512,
+        "min": 0.9946941779999179,
+        "max": 1.174856624998938,
+        "runs": [
+          1.0367790919990512,
+          0.9965881680000166,
+          0.9946941779999179,
+          1.0515086889972736,
+          1.174856624998938
+        ]
+      },
+      "full_read": {
+        "median": 1.1579013600021426,
+        "min": 1.1224996819983062,
+        "max": 1.2442522240016842,
+        "runs": [
+          1.1880460850006784,
+          1.2442522240016842,
+          1.1224996819983062,
+          1.1579013600021426,
+          1.1475527149996196
+        ]
+      },
+      "filtered_read": {
+        "median": 0.18581431400161819,
+        "min": 0.18135740299840108,
+        "max": 0.21878589199695853,
+        "runs": [
+          0.18135740299840108,
+          0.21878589199695853,
+          0.18787207400237094,
+          0.18554460399900563,
+          0.18581431400161819
+        ]
+      },
+      "row_count": 49897,
+      "filtered_rows": 8355,
+      "plan": {
+        "node_type": "Seq Scan",
+        "execution_ms": 7.716,
+        "planning_ms": 0.084
+      }
+    },
+    "indexed": {
+      "sizes": {
+        "total_bytes": 15605760,
+        "table_bytes": 13606912,
+        "index_bytes": 1957888
+      },
+      "index_build": {
+        "median": 0.04392527999880258,
+        "min": 0.04206970800078125,
+        "max": 0.06563589200231945,
+        "runs": [
+          0.06563589200231945,
+          0.04535402399778832,
+          0.04206970800078125,
+          0.04392527999880258,
+          0.042246258999512065
+        ]
+      },
+      "full_read": {
+        "median": 1.1830471889988985,
+        "min": 1.122297443998832,
+        "max": 1.1979608299989195,
+        "runs": [
+          1.1884953990011127,
+          1.1282745720018283,
+          1.1830471889988985,
+          1.1979608299989195,
+          1.122297443998832
+        ]
+      },
+      "filtered_read": {
+        "median": 0.18958118999944418,
+        "min": 0.1776740469977085,
+        "max": 0.21071854700130643,
+        "runs": [
+          0.21071854700130643,
+          0.18958118999944418,
+          0.1836913410006673,
+          0.1776740469977085,
+          0.19520919899878209
+        ]
+      },
+      "row_count": 49897,
+      "filtered_rows": 8355,
+      "plan": {
+        "node_type": "Bitmap Heap Scan",
+        "execution_ms": 3.423,
+        "planning_ms": 0.102
+      }
+    },
+    "hash_mismatches": 0
+  },
+  "partitioning": {
+    "partition_count": 21,
+    "rows_per_partition_min": 951,
+    "rows_per_partition_max": 2540,
+    "selected": {
+      "order_year": 2026,
+      "order_month": 1
+    },
+    "selected_rows_expected": 2506,
+    "selected_rows_read": 2506,
+    "selected_rows_all_in_month": true,
+    "all_files": 21,
+    "all_bytes": 6740181,
+    "selected_files": 1,
+    "selected_bytes": 335453,
+    "full_dataset_read": {
+      "median": 0.12182507499892381,
+      "min": 0.11733204800111707,
+      "max": 0.14228113900026074,
+      "runs": [
+        0.14228113900026074,
+        0.11733204800111707,
+        0.11907739099842729,
+        0.12182507499892381,
+        0.1341860380016442
+      ]
+    },
+    "selected_partition_read": {
+      "median": 0.015299891001632204,
+      "min": 0.013404138997429982,
+      "max": 0.020472424999752548,
+      "runs": [
+        0.020472424999752548,
+        0.014648713000497082,
+        0.018324845001188805,
+        0.013404138997429982,
+        0.015299891001632204
+      ]
+    },
+    "full_dataset_rows": 49897,
+    "tree": [
+      "order_year=2025/order_month=1/part-0.parquet",
+      "order_year=2025/order_month=10/part-0.parquet",
+      "order_year=2025/order_month=11/part-0.parquet",
+      "order_year=2025/order_month=12/part-0.parquet",
+      "order_year=2025/order_month=2/part-0.parquet",
+      "order_year=2025/order_month=3/part-0.parquet",
+      "order_year=2025/order_month=4/part-0.parquet",
+      "order_year=2025/order_month=5/part-0.parquet",
+      "order_year=2025/order_month=6/part-0.parquet",
+      "order_year=2025/order_month=7/part-0.parquet",
+      "order_year=2025/order_month=8/part-0.parquet",
+      "order_year=2025/order_month=9/part-0.parquet",
+      "order_year=2026/order_month=1/part-0.parquet",
+      "order_year=2026/order_month=2/part-0.parquet",
+      "order_year=2026/order_month=3/part-0.parquet",
+      "order_year=2026/order_month=4/part-0.parquet",
+      "order_year=2026/order_month=5/part-0.parquet",
+      "order_year=2026/order_month=6/part-0.parquet",
+      "order_year=2026/order_month=7/part-0.parquet",
+      "order_year=2026/order_month=8/part-0.parquet",
+      "order_year=2026/order_month=9/part-0.parquet"
+    ]
+  },
+  "run": {
+    "curated_run_id": "cleanroom_1",
+    "generated_at_utc": "2026-09-21T20:33:07.717975+00:00",
+    "repeats": 5,
+    "warm_up_runs_discarded_per_measurement": 1,
+    "filter": "status = DELIVERED",
+    "rows": 49897,
+    "columns": 20,
+    "environment": {
+      "python": "3.11.16",
+      "platform": "Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43",
+      "pandas": "2.2.3",
+      "pyarrow": "17.0.0",
+      "psycopg": "3.2.3",
+      "postgresql": "16.15 (Debian 16.15-1.pgdg13+2)"
+    }
+  }
+}

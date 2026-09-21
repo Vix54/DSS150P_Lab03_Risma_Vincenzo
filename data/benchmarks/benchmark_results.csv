@@ -1,0 +1,7 @@
+storage_type,file_size_bytes,write_seconds,full_read_seconds,filtered_read_seconds,row_count,notes
+csv,14181711,0.97533,0.250647,0.242682,49897,filtered_rows=8355; hash_mismatches=0; same_row_set=True; read_csv with type inference; the filter runs after a full read
+jsonl,30467326,0.998461,0.656155,0.712578,49897,filtered_rows=8355; hash_mismatches=0; same_row_set=True; one JSON object per line with money as exact strings; the filter runs after a full read
+parquet_snappy,5396477,0.178575,0.113206,0.035548,49897,filtered_rows=8355; hash_mismatches=0; same_row_set=True; compression=snappy; typed columnar file; the filter is pushed down to the reader
+parquet_zstd,3421025,0.182706,0.108439,0.03261,49897,filtered_rows=8355; hash_mismatches=0; same_row_set=True; compression=zstd; typed columnar file; the filter is pushed down to the reader
+postgresql,15261696,1.036779,1.157901,0.185814,49897,"size=pg_total_relation_size with primary key index (table_bytes=13631488, index_bytes=1589248); write=COPY plus commit; filtered_rows=8355; plan=Seq Scan; hash_mismatches=0; server=16.15 (Debian 16.15-1.pgdg13+2)"
+postgresql_status_index,15605760,0.043925,1.183047,0.189581,49897,write_seconds is CREATE INDEX on status; size includes both indexes (index_bytes=1957888); filtered_rows=8355; plan=Bitmap Heap Scan

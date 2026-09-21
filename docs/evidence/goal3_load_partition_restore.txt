@@ -1,0 +1,28 @@
+2026-09-21T20:51:21Z
+DELETE 2506
+ count 
+-------
+     0
+(1 row)
+
+2026-09-21T20:51:22Z INFO src.load.partitions partition 2026-01 loaded from run cleanroom_1: rows_in=2506 inserted=2506 updated=0 unchanged=0
+partition=2026-01 source_run_id=cleanroom_1
+rows_in=2506 inserted=2506 updated=0 unchanged=0
+exit=0
+2026-09-21T20:51:23Z INFO src.load.partitions partition 2026-01 loaded from run cleanroom_1: rows_in=2506 inserted=0 updated=0 unchanged=2506
+partition=2026-01 source_run_id=cleanroom_1
+rows_in=2506 inserted=0 updated=0 unchanged=2506
+exit=0
+ total | distinct_orders 
+-------+-----------------
+ 49897 |           49897
+(1 row)
+
+2026-09-21T20:51:24Z INFO src.validate.stages check passed: source and raw file hashes
+2026-09-21T20:51:24Z INFO src.validate.stages check passed: row counts reconcile across layers
+2026-09-21T20:51:25Z INFO src.validate.stages check passed: curated rules V-01 to V-10
+2026-09-21T20:51:26Z INFO src.validate.stages check passed: PostgreSQL V-11, hash match and audit row
+2026-09-21T20:51:26Z INFO src.validate.stages validation of cleanroom_1 passed: 4 checks, 49897 curated rows
+run_id=cleanroom_1
+validation=passed checks=4 rows_checked=49897
+exit=0

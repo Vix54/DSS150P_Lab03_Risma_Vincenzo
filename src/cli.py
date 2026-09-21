@@ -17,7 +17,8 @@ def build_parser():
         stage_parser = sub.add_parser(name)
         stage_parser.add_argument('--run-id')
     benchmark = sub.add_parser('benchmark')
-    benchmark.add_argument('--repeats', type=int, default=5)
+    benchmark.add_argument('--repeats', type=int)
+    benchmark.add_argument('--run-id')
     partition = sub.add_parser('load-partition')
     partition.add_argument('--year', type=int, required=True)
     partition.add_argument('--month', type=int, required=True)
@@ -68,6 +69,29 @@ def run_validate_command(args):
     print(f"validation=passed checks={summary['checks']} rows_checked={summary['rows_checked']}")
 
 
+def run_benchmark_command(args):
+    from src.benchmark.storage import run_benchmark
+    from src.common.runs import resolve_run_id_for_stage, run_dir
+    from src.config import SETTINGS
+    from src.transform.stages import CURATED_FILE
+
+    run_id = resolve_run_id_for_stage(args.run_id, 'curated_dir')
+    repeats = args.repeats or SETTINGS['storage_benchmark']['repeats']
+    rows, _ = run_benchmark(run_dir('curated_dir', run_id) / CURATED_FILE, run_id, repeats)
+    print(f'curated_run_id={run_id}')
+    print('storage_type,file_size_bytes,write_seconds,full_read_seconds,filtered_read_seconds,row_count')
+    for row in rows:
+        print(','.join(str(row[column]) for column in ['storage_type', 'file_size_bytes', 'write_seconds', 'full_read_seconds', 'filtered_read_seconds', 'row_count']))
+
+
+def run_load_partition_command(args):
+    from src.load.partitions import run_load_partition
+
+    run_id, outcome = run_load_partition(args.year, args.month)
+    print(f'partition={args.year:04d}-{args.month:02d} source_run_id={run_id}')
+    print(f"rows_in={outcome['rows_in']} inserted={outcome['inserted']} updated={outcome['updated']} unchanged={outcome['unchanged']}")
+
+
 def run_all(args):
     from src.common.runs import resolve_run_id
     from src.extract.files import extract_sources
@@ -100,6 +124,8 @@ STAGE_HANDLERS = {
     'load': run_load_command,
     'validate': run_validate_command,
     'run-all': run_all,
+    'benchmark': run_benchmark_command,
+    'load-partition': run_load_partition_command,
 }
 
 
