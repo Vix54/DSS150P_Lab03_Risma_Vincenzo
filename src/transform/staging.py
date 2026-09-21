@@ -35,14 +35,14 @@ def join_reasons(index, rules):
     return reasons.str.rstrip(';')
 
 
-def quarantine_rows(source, raw_rows, key, reasons, run_id, stamped_at):
+def quarantine_rows(source, raw_rows, key, reasons, run_id, stamped_at, stage='staging'):
     flagged = reasons.index[reasons != '']
     subset = raw_rows.loc[flagged]
     return pd.DataFrame({
         'source': source,
         'business_key': subset[key].astype(str).values,
         'reasons': reasons.loc[flagged].values,
-        'stage': 'staging',
+        'stage': stage,
         'record_json': [json.dumps(record, default=str, sort_keys=True) for record in subset.to_dict('records')],
         'pipeline_run_id': run_id,
         'quarantined_at_utc': stamped_at,

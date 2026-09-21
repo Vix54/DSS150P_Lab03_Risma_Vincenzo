@@ -78,7 +78,7 @@ Versions are resolved before value rules are applied, so an older version that w
 | X-04 | `gross_amount = quantity * unit_price`, `discount_amount = gross_amount * discount_pct`, `net_amount = gross_amount - discount_amount`, using the order's own `unit_price`, decimal arithmetic and half-up rounding to 2 places | Calculate | Of 50004 orders with a matching product, 49905 have the same price as their product's latest version; all 99 that differ belong to `P0078`, so the price source changes no curated row |
 | X-05 | Add `source_updated_at`, `pipeline_run_id`, `processed_at_utc` and `record_hash` | Audit | Lab requirement |
 
-`record_hash` covers business columns only and excludes `pipeline_run_id` and `processed_at_utc`. The exact column list is recorded when the curated transformation is implemented.
+`record_hash` is the SHA-256 of the canonical JSON of these 16 columns: `order_id`, `customer_id`, `product_id`, `order_timestamp`, `customer_city`, `customer_tier`, `product_name`, `category`, `brand`, `quantity`, `unit_price`, `discount_pct`, `gross_amount`, `discount_amount`, `net_amount` and `status`. It excludes `source_updated_at`, `pipeline_run_id` and `processed_at_utc`, so a new pipeline run, or a source version that changes only `updated_at`, produces the same hash and causes no update.
 
 ## 5. Quarantine records
 
