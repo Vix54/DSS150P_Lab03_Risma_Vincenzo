@@ -29,3 +29,7 @@ def get_db_settings() -> dict:
 
 def path_for(key: str) -> Path:
     return PROJECT_ROOT / SETTINGS['pipeline'][key]
+
+
+def display_path(path: Path) -> str:
+    return path.relative_to(PROJECT_ROOT).as_posix()
