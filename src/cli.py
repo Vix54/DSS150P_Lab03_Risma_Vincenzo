@@ -58,6 +58,33 @@ def run_load_command(args):
     print(f"rows_in={outcome['rows_in']} inserted={outcome['inserted']} updated={outcome['updated']} unchanged={outcome['unchanged']}")
 
 
+def run_validate_command(args):
+    from src.common.runs import resolve_run_id_for_stage
+    from src.validate.stages import run_validate
+
+    run_id = resolve_run_id_for_stage(args.run_id, 'curated_dir')
+    summary = run_validate(run_id)
+    print(f'run_id={run_id}')
+    print(f"validation=passed checks={summary['checks']} rows_checked={summary['rows_checked']}")
+
+
+def run_all(args):
+    from src.common.runs import resolve_run_id
+    from src.extract.files import extract_sources
+    from src.load.stages import run_load
+    from src.transform.stages import run_curated, run_staging
+    from src.validate.stages import run_validate
+
+    run_id = resolve_run_id(args.run_id)
+    run_stage('extract', lambda _: extract_sources(run_id), None)
+    run_stage('transform', lambda _: (run_staging(run_id), run_curated(run_id)), None)
+    outcome = run_stage('load', lambda _: run_load(run_id), None)
+    summary = run_stage('validate', lambda _: run_validate(run_id), None)
+    print(f'run_id={run_id}')
+    print(f"load: inserted={outcome['inserted']} updated={outcome['updated']} unchanged={outcome['unchanged']}")
+    print(f"validation=passed checks={summary['checks']} rows_checked={summary['rows_checked']}")
+
+
 def run_stage(name, function, args):
     try:
         return function(args)
@@ -67,7 +94,13 @@ def run_stage(name, function, args):
         raise PipelineError(name, f'unexpected {type(error).__name__}: {error}') from error
 
 
-STAGE_HANDLERS = {'extract': run_extract, 'transform': run_transform, 'load': run_load_command}
+STAGE_HANDLERS = {
+    'extract': run_extract,
+    'transform': run_transform,
+    'load': run_load_command,
+    'validate': run_validate_command,
+    'run-all': run_all,
+}
 
 
 def dispatch(args):

@@ -13,11 +13,11 @@ KEY_COLUMN = 'order_id'
 logger = logging.getLogger(__name__)
 
 
-def connect():
+def connect(stage=STAGE):
     try:
         settings = get_db_settings()
     except RuntimeError as error:
-        raise PipelineError(STAGE, str(error)) from error
+        raise PipelineError(stage, str(error)) from error
     target = f"{settings['host']}:{settings['port']}/{settings['dbname']} as {settings['user']}"
     try:
         return psycopg.connect(
@@ -29,7 +29,7 @@ def connect():
             connect_timeout=10,
         )
     except psycopg.OperationalError as error:
-        raise PipelineError(STAGE, f'cannot connect to {target}: {error}') from error
+        raise PipelineError(stage, f'cannot connect to {target}: {error}') from error
 
 
 def to_python(value):
