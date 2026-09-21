@@ -1,0 +1,35 @@
+goal1 environment evidence
+2026-09-21T16:30:17Z
+/home/enzo/DSS150P_Lab03_Risma_Vincenzo/.venv/bin/python
+python_version=3.11.16
+pandas==2.2.3
+pyarrow==17.0.0
+psycopg==3.2.3
+python-dotenv==1.0.1
+PyYAML==6.0.2
+project_root=/home/enzo/DSS150P_Lab03_Risma_Vincenzo
+db_target=localhost:5432/dss150p user=dss150p
+environment_ok=True
+exit=0
+python_version=3.11.16
+pandas==2.2.3
+pyarrow==17.0.0
+psycopg==3.2.3
+python-dotenv==1.0.1
+PyYAML==6.0.2
+project_root=/home/enzo/DSS150P_Lab03_Risma_Vincenzo
+PROBLEM: Missing required environment variables: POSTGRES_PASSWORD
+exit=1
+numpy==2.4.6
+packaging==26.3
+pandas==2.2.3
+psycopg==3.2.3
+psycopg-binary==3.2.3
+pyarrow==17.0.0
+python-dateutil==2.9.0.post0
+python-dotenv==1.0.1
+pytz==2026.3.post1
+PyYAML==6.0.2
+six==1.17.0
+typing_extensions==4.16.0
+tzdata==2026.4

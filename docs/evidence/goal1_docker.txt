@@ -1,0 +1,42 @@
+2026-09-21T17:00:14Z
+IMAGE                                          ID             DISK USAGE   CONTENT SIZE   EXTRA
+dss150p_lab03_risma_vincenzo-pipeline:latest   77520268c0e6        606MB          140MB        
+NAME               IMAGE         COMMAND                  SERVICE    CREATED          STATUS                    PORTS
+dss150p-postgres   postgres:16   "docker-entrypoint.s…"   postgres   17 minutes ago   Up 17 minutes (healthy)   0.0.0.0:5432->5432/tcp, [::]:5432->5432/tcp
+ Container dss150p-postgres Running 
+ Container dss150p-postgres Waiting 
+ Container dss150p-postgres Healthy 
+ Container dss150p_lab03_risma_vincenzo-pipeline-run-7df105913859 Creating 
+ Container dss150p_lab03_risma_vincenzo-pipeline-run-7df105913859 Created 
+python_version=3.11.16
+pandas==2.2.3
+pyarrow==17.0.0
+psycopg==3.2.3
+python-dotenv==1.0.1
+PyYAML==6.0.2
+project_root=/app
+db_target=postgres:5432/dss150p user=dss150p
+environment_ok=True
+exit=0
+       List of schemas
+  Name   |       Owner       
+---------+-------------------
+ audit   | dss150p
+ curated | dss150p
+ public  | pg_database_owner
+ staging | dss150p
+(4 rows)
+
+               List of relations
+ Schema  |       Name        | Type  |  Owner  
+---------+-------------------+-------+---------
+ curated | sales_order_lines | table | dss150p
+(1 row)
+
+             List of relations
+ Schema |      Name       | Type  |  Owner  
+--------+-----------------+-------+---------
+ audit  | partition_loads | table | dss150p
+ audit  | pipeline_runs   | table | dss150p
+(2 rows)
+
