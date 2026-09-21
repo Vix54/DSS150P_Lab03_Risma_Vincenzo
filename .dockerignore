@@ -1,0 +1,13 @@
+.git
+.gitignore
+.env
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+data/raw/
+data/staging/
+data/curated/
+data/quarantine/
+data/partitioned/
+data/benchmarks/

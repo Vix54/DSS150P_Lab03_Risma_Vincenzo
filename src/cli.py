@@ -1,6 +1,6 @@
 import argparse
-from src.config import PROJECT_ROOT, DB, SETTINGS
 from src.common.audit import new_run_id
+from src.common.environment import check_environment
 
 
 def main():
@@ -17,12 +17,14 @@ def main():
     args = parser.parse_args()
 
     if args.command == 'validate-env':
-        print('PROJECT_ROOT=', PROJECT_ROOT)
-        print('DB host/database=', DB['host'], DB['dbname'])
-        print('Configured source=', SETTINGS['pipeline']['source_dir'])
+        problems = check_environment()
+        if problems:
+            for problem in problems:
+                print('PROBLEM:', problem)
+            raise SystemExit(1)
+        print('environment_ok=True')
         return
 
-    # TODO: Wire the modular functions together. Keep orchestration logic thin.
     raise NotImplementedError(f'Wire command: {args.command}')
 
 if __name__ == '__main__':
