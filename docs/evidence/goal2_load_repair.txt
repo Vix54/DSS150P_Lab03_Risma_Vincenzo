@@ -1,0 +1,11 @@
+2026-09-21T19:15:29Z
+UPDATE 1
+2026-09-21T19:15:31Z INFO src.load.stages load evidence_run_1: rows_in=49897 inserted=0 updated=1 unchanged=49896
+run_id=evidence_run_1
+rows_in=49897 inserted=0 updated=1 unchanged=49896
+exit=0
+ order_id | customer_city | pipeline_run_id | net_amount 
+----------+---------------+-----------------+------------
+ O0000001 | Pasig         | evidence_run_1  |  432861.75
+(1 row)
+

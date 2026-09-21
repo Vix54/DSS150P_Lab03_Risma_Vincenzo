@@ -48,6 +48,28 @@ def run_transform(args):
     print(f'curated_dir={display_path(curated_dir)}')
 
 
+def run_load_command(args):
+    from src.common.runs import resolve_run_id_for_stage
+    from src.load.stages import run_load
+
+    run_id = resolve_run_id_for_stage(args.run_id, 'curated_dir')
+    outcome = run_load(run_id)
+    print(f'run_id={run_id}')
+    print(f"rows_in={outcome['rows_in']} inserted={outcome['inserted']} updated={outcome['updated']} unchanged={outcome['unchanged']}")
+
+
+def run_stage(name, function, args):
+    try:
+        return function(args)
+    except PipelineError:
+        raise
+    except Exception as error:
+        raise PipelineError(name, f'unexpected {type(error).__name__}: {error}') from error
+
+
+STAGE_HANDLERS = {'extract': run_extract, 'transform': run_transform, 'load': run_load_command}
+
+
 def dispatch(args):
     if args.command == 'validate-env':
         problems = check_environment()
@@ -57,13 +79,10 @@ def dispatch(args):
             raise SystemExit(1)
         print('environment_ok=True')
         return
-    if args.command == 'extract':
-        run_extract(args)
-        return
-    if args.command == 'transform':
-        run_transform(args)
-        return
-    raise NotImplementedError(f'Wire command: {args.command}')
+    handler = STAGE_HANDLERS.get(args.command)
+    if handler is None:
+        raise NotImplementedError(f'Wire command: {args.command}')
+    run_stage(args.command, handler, args)
 
 
 def main():
@@ -72,7 +91,7 @@ def main():
     try:
         dispatch(args)
     except PipelineError as error:
-        logger.error('%s', error)
+        logger.error('%s', error, exc_info=error.__cause__)
         raise SystemExit(1)
 
 

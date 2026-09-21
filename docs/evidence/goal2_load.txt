@@ -1,0 +1,107 @@
+2026-09-21T19:14:07Z
+NAME               IMAGE         COMMAND                  SERVICE    CREATED       STATUS                 PORTS
+dss150p-postgres   postgres:16   "docker-entrypoint.s…"   postgres   3 hours ago   Up 3 hours (healthy)   0.0.0.0:5432->5432/tcp, [::]:5432->5432/tcp
+You are now connected to database "dss150p" as user "dss150p".
+BEGIN
+ALTER TABLE
+NOTICE:  constraint "chk_sol_quantity_range" of relation "sales_order_lines" does not exist, skipping
+ALTER TABLE
+NOTICE:  constraint "chk_sol_unit_price_nonnegative" of relation "sales_order_lines" does not exist, skipping
+ALTER TABLE
+ALTER TABLE
+NOTICE:  constraint "chk_sol_discount_pct_range" of relation "sales_order_lines" does not exist, skipping
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+NOTICE:  constraint "chk_sol_amounts_nonnegative" of relation "sales_order_lines" does not exist, skipping
+ALTER TABLE
+ALTER TABLE
+NOTICE:  constraint "chk_sol_net_amount_formula" of relation "sales_order_lines" does not exist, skipping
+ALTER TABLE
+NOTICE:  constraint "chk_sol_status_allowed" of relation "sales_order_lines" does not exist, skipping
+ALTER TABLE
+NOTICE:  constraint "chk_sol_record_hash_length" of relation "sales_order_lines" does not exist, skipping
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+COMMIT
+                       Table "curated.sales_order_lines"
+      Column       |           Type           | Collation | Nullable | Default 
+-------------------+--------------------------+-----------+----------+---------
+ order_id          | text                     |           | not null | 
+ customer_id       | text                     |           | not null | 
+ product_id        | text                     |           | not null | 
+ order_timestamp   | timestamp with time zone |           | not null | 
+ customer_city     | text                     |           |          | 
+ customer_tier     | text                     |           |          | 
+ product_name      | text                     |           |          | 
+ category          | text                     |           |          | 
+ brand             | text                     |           |          | 
+ quantity          | integer                  |           | not null | 
+ unit_price        | numeric(14,2)            |           | not null | 
+ discount_pct      | numeric(6,4)             |           | not null | 
+ gross_amount      | numeric(16,2)            |           | not null | 
+ discount_amount   | numeric(16,2)            |           | not null | 
+ net_amount        | numeric(16,2)            |           | not null | 
+ status            | text                     |           | not null | 
+ source_updated_at | timestamp with time zone |           | not null | 
+ pipeline_run_id   | text                     |           | not null | 
+ processed_at_utc  | timestamp with time zone |           | not null | 
+ record_hash       | text                     |           | not null | 
+Indexes:
+    "sales_order_lines_pkey" PRIMARY KEY, btree (order_id)
+Check constraints:
+    "chk_sol_amounts_nonnegative" CHECK (gross_amount >= 0::numeric AND discount_amount >= 0::numeric AND net_amount >= 0::numeric)
+    "chk_sol_discount_pct_range" CHECK (discount_pct >= 0::numeric AND discount_pct <= 1::numeric)
+    "chk_sol_net_amount_formula" CHECK (net_amount = (gross_amount - discount_amount))
+    "chk_sol_quantity_range" CHECK (quantity >= 1 AND quantity <= 20)
+    "chk_sol_record_hash_length" CHECK (char_length(record_hash) = 64)
+    "chk_sol_status_allowed" CHECK (status = ANY (ARRAY['PENDING'::text, 'PAID'::text, 'PACKED'::text, 'SHIPPED'::text, 'DELIVERED'::text, 'CANCELLED'::text]))
+    "chk_sol_unit_price_nonnegative" CHECK (unit_price >= 0::numeric)
+
+........................                                                 [100%]
+24 passed in 1.20s
+2026-09-21T19:14:11Z INFO src.load.stages load evidence_run_1: rows_in=49897 inserted=49897 updated=0 unchanged=0
+run_id=evidence_run_1
+rows_in=49897 inserted=49897 updated=0 unchanged=0
+exit=0
+2026-09-21T19:14:12Z INFO src.load.stages load evidence_run_1: rows_in=49897 inserted=0 updated=0 unchanged=49897
+run_id=evidence_run_1
+rows_in=49897 inserted=0 updated=0 unchanged=49897
+exit=0
+2026-09-21T19:14:14Z INFO src.load.stages load evidence_run_2: rows_in=49897 inserted=0 updated=0 unchanged=49897
+run_id=evidence_run_2
+rows_in=49897 inserted=0 updated=0 unchanged=49897
+exit=0
+ total | distinct_orders 
+-------+-----------------
+ 49897 |           49897
+(1 row)
+
+ pipeline_run_id | count 
+-----------------+-------
+ evidence_run_1  | 49897
+(1 row)
+
+ pipeline_run_id | status | rows_staging | rows_curated | rows_quarantined |               message                
+-----------------+--------+--------------+--------------+------------------+--------------------------------------
+ evidence_run_1  | loaded |        49998 |        49897 |              104 | inserted=0 updated=0 unchanged=49897
+ evidence_run_2  | loaded |        49998 |        49897 |              104 | inserted=0 updated=0 unchanged=49897
+(2 rows)
+
+2026-09-21T19:14:15Z ERROR cli [load] cannot connect to localhost:5999/dss150p as dss150p: connection failed: connection to server at "127.0.0.1", port 5999 failed: Connection refused
+	Is the server running on that host and accepting TCP/IP connections?
+Traceback (most recent call last):
+  File "/home/enzo/DSS150P_Lab03_Risma_Vincenzo/src/load/postgres.py", line 23, in connect
+    return psycopg.connect(
+           ^^^^^^^^^^^^^^^^
+  File "/home/enzo/DSS150P_Lab03_Risma_Vincenzo/.venv/lib/python3.11/site-packages/psycopg/connection.py", line 119, in connect
+    raise last_ex.with_traceback(None)
+psycopg.OperationalError: connection failed: connection to server at "127.0.0.1", port 5999 failed: Connection refused
+	Is the server running on that host and accepting TCP/IP connections?
+exit=1
+2026-09-21T19:14:16Z ERROR cli [load] curated output run_id=no_such_run is missing or incomplete; run transform first
+exit=1
+data/source/customers.csv: OK
+data/source/orders.csv: OK
+data/source/products.json: OK
