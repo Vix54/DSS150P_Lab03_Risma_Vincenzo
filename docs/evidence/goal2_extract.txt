@@ -1,0 +1,53 @@
+2026-09-21T18:22:21Z
+........                                                                 [100%]
+8 passed in 0.06s
+2026-09-21T18:22:21Z INFO src.extract.files copied customers.csv (351125 bytes)
+2026-09-21T18:22:21Z INFO src.extract.files copied products.json (160497 bytes)
+2026-09-21T18:22:21Z INFO src.extract.files copied orders.csv (4856331 bytes)
+2026-09-21T18:22:21Z INFO src.extract.files raw snapshot run_id=evidence_run_1 complete with 3 files
+run_id=evidence_run_1
+raw_dir=data/raw/run_id=evidence_run_1
+exit=0
+2026-09-21T18:22:21Z INFO src.extract.files raw snapshot run_id=evidence_run_1 is already complete and verified; nothing to copy
+run_id=evidence_run_1
+raw_dir=data/raw/run_id=evidence_run_1
+exit=0
+_SUCCESS.json
+customers.csv
+manifest.json
+orders.csv
+products.json
+{
+  "run_id": "evidence_run_1",
+  "stage": "extract",
+  "_ingested_at_utc": "2026-09-21T18:22:21.710915+00:00",
+  "files": [
+    {
+      "name": "customers.csv",
+      "source_path": "data/source/customers.csv",
+      "size_bytes": 351125,
+      "sha256": "cd7617476ba9c29548941bafa453060f082707f60eb01335d023a9d46ba49212"
+    },
+    {
+      "name": "products.json",
+      "source_path": "data/source/products.json",
+      "size_bytes": 160497,
+      "sha256": "18ba24bddd2a6f9e691ac720aae28e9c7b707dfb13bb6921a3ce2dbdfcb41047"
+    },
+    {
+      "name": "orders.csv",
+      "source_path": "data/source/orders.csv",
+      "size_bytes": 4856331,
+      "sha256": "f2de6cbd4ce9d3838401d3d6468accd40815c14bb6cb682f4340d897fd4338c3"
+    }
+  ]
+}{
+  "completed_at_utc": "2026-09-21T18:22:21.711068+00:00",
+  "run_id": "evidence_run_1",
+  "stage": "extract"
+}cd7617476ba9c29548941bafa453060f082707f60eb01335d023a9d46ba49212  customers.csv
+f2de6cbd4ce9d3838401d3d6468accd40815c14bb6cb682f4340d897fd4338c3  orders.csv
+18ba24bddd2a6f9e691ac720aae28e9c7b707dfb13bb6921a3ce2dbdfcb41047  products.json
+data/source/customers.csv: OK
+data/source/orders.csv: OK
+data/source/products.json: OK

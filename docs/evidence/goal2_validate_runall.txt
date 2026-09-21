@@ -1,0 +1,106 @@
+2026-09-21T19:30:59Z
+....................................                                     [100%]
+36 passed in 1.22s
+2026-09-21T19:31:01Z INFO src.validate.stages check passed: source and raw file hashes
+2026-09-21T19:31:01Z INFO src.validate.stages check passed: row counts reconcile across layers
+2026-09-21T19:31:03Z INFO src.validate.stages check passed: curated rules V-01 to V-10
+2026-09-21T19:31:04Z INFO src.validate.stages check passed: PostgreSQL V-11, hash match and audit row
+2026-09-21T19:31:04Z INFO src.validate.stages validation of evidence_run_1 passed: 4 checks, 49897 curated rows
+run_id=evidence_run_1
+validation=passed checks=4 rows_checked=49897
+exit=0
+2026-09-21T19:31:04Z INFO src.extract.files copied customers.csv (351125 bytes)
+2026-09-21T19:31:04Z INFO src.extract.files copied products.json (160497 bytes)
+2026-09-21T19:31:04Z INFO src.extract.files copied orders.csv (4856331 bytes)
+2026-09-21T19:31:04Z INFO src.extract.files raw snapshot run_id=evidence_run_3 complete with 3 files
+2026-09-21T19:31:05Z INFO src.transform.stages customers: raw=3003 superseded=3 quarantined=0 staged=3000
+2026-09-21T19:31:05Z INFO src.transform.stages products: raw=601 superseded=1 quarantined=1 staged=599
+2026-09-21T19:31:05Z INFO src.transform.stages orders: raw=50005 superseded=5 quarantined=2 staged=49998
+2026-09-21T19:31:06Z INFO src.transform.stages curated: orders_staged=49998 curated=49897 quarantined=101 reasons={'order_product_quarantined': 99, 'order_customer_not_found': 1, 'order_product_not_found': 1}
+2026-09-21T19:31:08Z INFO src.load.stages load evidence_run_3: rows_in=49897 inserted=0 updated=0 unchanged=49897
+2026-09-21T19:31:08Z INFO src.validate.stages check passed: source and raw file hashes
+2026-09-21T19:31:08Z INFO src.validate.stages check passed: row counts reconcile across layers
+2026-09-21T19:31:10Z INFO src.validate.stages check passed: curated rules V-01 to V-10
+2026-09-21T19:31:11Z INFO src.validate.stages check passed: PostgreSQL V-11, hash match and audit row
+2026-09-21T19:31:11Z INFO src.validate.stages validation of evidence_run_3 passed: 4 checks, 49897 curated rows
+run_id=evidence_run_3
+load: inserted=0 updated=0 unchanged=49897
+validation=passed checks=4 rows_checked=49897
+exit=0
+2026-09-21T19:31:11Z INFO src.extract.files raw snapshot run_id=evidence_run_3 is already complete and verified; nothing to copy
+2026-09-21T19:31:11Z INFO src.transform.stages staging run_id=evidence_run_3 is already complete; nothing to do
+2026-09-21T19:31:11Z INFO src.transform.stages curated run_id=evidence_run_3 is already complete; nothing to do
+2026-09-21T19:31:13Z INFO src.load.stages load evidence_run_3: rows_in=49897 inserted=0 updated=0 unchanged=49897
+2026-09-21T19:31:13Z INFO src.validate.stages check passed: source and raw file hashes
+2026-09-21T19:31:13Z INFO src.validate.stages check passed: row counts reconcile across layers
+2026-09-21T19:31:15Z INFO src.validate.stages check passed: curated rules V-01 to V-10
+2026-09-21T19:31:16Z INFO src.validate.stages check passed: PostgreSQL V-11, hash match and audit row
+2026-09-21T19:31:16Z INFO src.validate.stages validation of evidence_run_3 passed: 4 checks, 49897 curated rows
+run_id=evidence_run_3
+load: inserted=0 updated=0 unchanged=49897
+validation=passed checks=4 rows_checked=49897
+exit=0
+2026-09-21T19:31:17Z INFO src.extract.files copied customers.csv (351125 bytes)
+2026-09-21T19:31:17Z INFO src.extract.files copied products.json (160497 bytes)
+2026-09-21T19:31:17Z INFO src.extract.files copied orders.csv (4856331 bytes)
+2026-09-21T19:31:17Z INFO src.extract.files raw snapshot run_id=run_20260921T193117Z_28cb134c complete with 3 files
+2026-09-21T19:31:17Z INFO src.transform.stages customers: raw=3003 superseded=3 quarantined=0 staged=3000
+2026-09-21T19:31:17Z INFO src.transform.stages products: raw=601 superseded=1 quarantined=1 staged=599
+2026-09-21T19:31:17Z INFO src.transform.stages orders: raw=50005 superseded=5 quarantined=2 staged=49998
+2026-09-21T19:31:19Z INFO src.transform.stages curated: orders_staged=49998 curated=49897 quarantined=101 reasons={'order_product_quarantined': 99, 'order_customer_not_found': 1, 'order_product_not_found': 1}
+2026-09-21T19:31:20Z INFO src.load.stages load run_20260921T193117Z_28cb134c: rows_in=49897 inserted=0 updated=0 unchanged=49897
+2026-09-21T19:31:20Z INFO src.validate.stages check passed: source and raw file hashes
+2026-09-21T19:31:21Z INFO src.validate.stages check passed: row counts reconcile across layers
+2026-09-21T19:31:22Z INFO src.validate.stages check passed: curated rules V-01 to V-10
+2026-09-21T19:31:23Z INFO src.validate.stages check passed: PostgreSQL V-11, hash match and audit row
+2026-09-21T19:31:23Z INFO src.validate.stages validation of run_20260921T193117Z_28cb134c passed: 4 checks, 49897 curated rows
+run_id=run_20260921T193117Z_28cb134c
+load: inserted=0 updated=0 unchanged=49897
+validation=passed checks=4 rows_checked=49897
+exit=0
+2026-09-21T19:31:25Z INFO src.load.stages load run_20260921T193117Z_28cb134c: rows_in=49897 inserted=0 updated=0 unchanged=49897
+run_id=run_20260921T193117Z_28cb134c
+rows_in=49897 inserted=0 updated=0 unchanged=49897
+exit=0
+2026-09-21T19:31:27Z INFO src.load.stages load run_20260921T193117Z_28cb134c: rows_in=49897 inserted=0 updated=0 unchanged=49897
+run_id=run_20260921T193117Z_28cb134c
+rows_in=49897 inserted=0 updated=0 unchanged=49897
+exit=0
+2026-09-21T19:31:27Z INFO src.validate.stages check passed: source and raw file hashes
+2026-09-21T19:31:28Z INFO src.validate.stages check passed: row counts reconcile across layers
+2026-09-21T19:31:29Z INFO src.validate.stages check passed: curated rules V-01 to V-10
+2026-09-21T19:31:30Z INFO src.validate.stages check passed: PostgreSQL V-11, hash match and audit row
+2026-09-21T19:31:30Z INFO src.validate.stages validation of run_20260921T193117Z_28cb134c passed: 4 checks, 49897 curated rows
+run_id=run_20260921T193117Z_28cb134c
+validation=passed checks=4 rows_checked=49897
+exit=0
+ total | distinct_orders 
+-------+-----------------
+ 49897 |           49897
+(1 row)
+
+        pipeline_run_id        | status | rows_staging | rows_curated | rows_quarantined |               message                
+-------------------------------+--------+--------------+--------------+------------------+--------------------------------------
+ evidence_run_1                | loaded |        49998 |        49897 |              104 | inserted=0 updated=1 unchanged=49896
+ evidence_run_2                | loaded |        49998 |        49897 |              104 | inserted=0 updated=0 unchanged=49897
+ evidence_run_3                | loaded |        49998 |        49897 |              104 | inserted=0 updated=0 unchanged=49897
+ run_20260921T193117Z_28cb134c | loaded |        49998 |        49897 |              104 | inserted=0 updated=0 unchanged=49897
+(4 rows)
+
+2026-09-21T19:31:31Z INFO src.validate.stages check passed: source and raw file hashes
+2026-09-21T19:31:31Z INFO src.validate.stages check passed: row counts reconcile across layers
+2026-09-21T19:31:33Z INFO src.validate.stages check passed: curated rules V-01 to V-10
+2026-09-21T19:31:33Z ERROR cli [validate] cannot connect to localhost:5999/dss150p as dss150p: connection failed: connection to server at "127.0.0.1", port 5999 failed: Connection refused
+	Is the server running on that host and accepting TCP/IP connections?
+Traceback (most recent call last):
+  File "/home/enzo/DSS150P_Lab03_Risma_Vincenzo/src/load/postgres.py", line 23, in connect
+    return psycopg.connect(
+           ^^^^^^^^^^^^^^^^
+  File "/home/enzo/DSS150P_Lab03_Risma_Vincenzo/.venv/lib/python3.11/site-packages/psycopg/connection.py", line 119, in connect
+    raise last_ex.with_traceback(None)
+psycopg.OperationalError: connection failed: connection to server at "127.0.0.1", port 5999 failed: Connection refused
+	Is the server running on that host and accepting TCP/IP connections?
+exit=1
+data/source/customers.csv: OK
+data/source/orders.csv: OK
+data/source/products.json: OK

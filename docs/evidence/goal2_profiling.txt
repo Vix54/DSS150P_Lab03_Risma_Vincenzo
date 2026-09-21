@@ -1,0 +1,126 @@
+profiling_run_at_utc=2026-09-21T17:52:34.521064+00:00
+source_dir=/home/enzo/DSS150P_Lab03_Risma_Vincenzo/data/source
+
+========================================================================
+customers.csv
+========================================================================
+-- customers: business key customer_id
+   physical_rows=3003
+   distinct_keys=3000
+   extra_rows_beyond_first_per_key=3
+   rows_sharing_a_key_with_another_row=6
+   extra_rows_identical_to_an_earlier_row=0
+   C00120: rows=2, differing_columns=['email', 'updated_at'], rows_at_latest_updated_at=1, updated_at_values=['2025-03-01T08:13:00+00:00', '2025-03-03T08:13:00+00:00']
+   C01250: rows=2, differing_columns=['email', 'updated_at'], rows_at_latest_updated_at=1, updated_at_values=['2025-04-09T03:18:00+00:00', '2025-04-11T03:18:00+00:00']
+   C02600: rows=2, differing_columns=['email', 'updated_at'], rows_at_latest_updated_at=1, updated_at_values=['2026-03-10T03:36:00+00:00', '2026-03-12T03:36:00+00:00']
+-- customers: blank values and outer whitespace per column
+   customer_id: blank=0, outer_whitespace=0
+   first_name: blank=0, outer_whitespace=0
+   last_name: blank=0, outer_whitespace=0
+   email: blank=4, outer_whitespace=0
+   city: blank=0, outer_whitespace=2
+   customer_tier: blank=0, outer_whitespace=0
+   created_at: blank=0, outer_whitespace=0
+   updated_at: blank=0, outer_whitespace=0
+-- customers.created_at: present=3003, not_iso8601=0, unparseable=0
+   offsets={'+00:00': 3003}
+   min=2023-01-01 00:00:00+00:00, max=2024-01-01 00:00:00+00:00
+-- customers.updated_at: present=3003, not_iso8601=0, unparseable=0
+   offsets={'+00:00': 3003}
+   min=2024-01-01 01:11:00+00:00, max=2026-04-30 19:47:00+00:00
+-- customers: updated_at_before_created_at=0
+-- customers.email: no_at_sign=0, differs_from_lowercase=3
+-- customers.city: distinct_as_written=11, distinct_after_trim_title=10
+   values_after_trim_title={'Pasig': 317, 'Pasay': 313, 'Taguig': 311, 'Makati': 305, 'Quezon City': 300, 'Parañaque': 299, 'Mandaluyong': 295, 'Caloocan': 294, 'Manila': 294, 'Marikina': 275}
+-- customers.customer_tier counts: {'Bronze': 1369, 'Silver': 896, 'Gold': 600, 'Platinum': 138}
+
+========================================================================
+products.json
+========================================================================
+-- top_level_type=list, records=601
+   key_set=['active', 'brand', 'category', 'name', 'product_id', 'unit_price', 'updated_at'], records=601
+   python_type_of_active={'bool': 601}
+   python_type_of_brand={'str': 601}
+   python_type_of_category={'dict': 601}
+   python_type_of_name={'str': 601}
+   python_type_of_product_id={'str': 601}
+   python_type_of_unit_price={'float': 601}
+   python_type_of_updated_at={'str': 601}
+-- nested category key sets: {('department', 'name'): 601}
+-- products: business key product_id
+   physical_rows=601
+   distinct_keys=600
+   extra_rows_beyond_first_per_key=1
+   rows_sharing_a_key_with_another_row=2
+   extra_rows_identical_to_an_earlier_row=0
+   P0300: rows=2, differing_columns=['name', 'updated_at'], rows_at_latest_updated_at=1, updated_at_values=['2024-03-21T00:00:00+00:00', '2024-03-24T00:00:00+00:00']
+-- products: blank values and outer whitespace per column
+   product_id: blank=0, outer_whitespace=0
+   name: blank=0, outer_whitespace=0
+   brand: blank=0, outer_whitespace=0
+   unit_price: blank=0, outer_whitespace=0
+   active: blank=0, outer_whitespace=0
+   updated_at: blank=0, outer_whitespace=0
+   category.name: blank=0, outer_whitespace=0
+   category.department: blank=0, outer_whitespace=0
+-- products.updated_at: present=601, not_iso8601=0, unparseable=0
+   offsets={'+00:00': 601}
+   min=2024-01-01 00:00:00+00:00, max=2026-04-30 00:00:00+00:00
+-- products.unit_price: non_numeric=0, min=-199.0, max=89926.78
+   not_positive=1, sample=[('P0078', -199.0)]
+-- products.category.name counts: {'Networking': 90, 'Accessory': 87, 'Laptop': 79, 'Storage': 75, 'Monitor': 74, 'Phone': 72, 'Audio': 68, 'Tablet': 56}
+-- products.category.department counts: {'Devices': 301, 'Computing': 300}
+
+========================================================================
+orders.csv
+========================================================================
+-- orders: business key order_id
+   physical_rows=50005
+   distinct_keys=50000
+   extra_rows_beyond_first_per_key=5
+   rows_sharing_a_key_with_another_row=10
+   extra_rows_identical_to_an_earlier_row=0
+   O0000100: rows=2, differing_columns=['status', 'updated_at'], rows_at_latest_updated_at=1, updated_at_values=['2025-03-15T02:59:00+00:00', '2025-03-16T02:59:00+00:00']
+   O0002500: rows=2, differing_columns=['status', 'updated_at'], rows_at_latest_updated_at=1, updated_at_values=['2026-02-14T22:13:00+00:00', '2026-02-15T22:13:00+00:00']
+   O0010000: rows=2, differing_columns=['updated_at'], rows_at_latest_updated_at=1, updated_at_values=['2025-05-07T21:09:00+00:00', '2025-05-08T21:09:00+00:00']
+   O0022222: rows=2, differing_columns=['status', 'updated_at'], rows_at_latest_updated_at=1, updated_at_values=['2025-04-14T14:49:00+00:00', '2025-04-15T14:49:00+00:00']
+   O0049900: rows=2, differing_columns=['status', 'updated_at'], rows_at_latest_updated_at=1, updated_at_values=['2026-04-28T02:49:00+00:00', '2026-04-29T02:49:00+00:00']
+-- orders: blank values and outer whitespace per column
+   order_id: blank=0, outer_whitespace=0
+   customer_id: blank=0, outer_whitespace=0
+   product_id: blank=0, outer_whitespace=0
+   order_timestamp: blank=0, outer_whitespace=0
+   quantity: blank=0, outer_whitespace=0
+   unit_price: blank=0, outer_whitespace=0
+   discount_pct: blank=0, outer_whitespace=0
+   status: blank=0, outer_whitespace=0
+   updated_at: blank=0, outer_whitespace=0
+-- orders.order_timestamp: present=50005, not_iso8601=0, unparseable=0
+   offsets={'+00:00': 50005}
+   min=2025-01-01 00:11:00+00:00, max=2026-09-12 23:44:00+00:00
+-- orders.updated_at: present=50005, not_iso8601=0, unparseable=0
+   offsets={'+00:00': 50005}
+   min=2025-01-01 04:41:00+00:00, max=2026-09-15 20:15:00+00:00
+-- orders.quantity: non_numeric=0, min=0, max=8
+   invalid_quantity_rows=1 (missing, fractional or outside 1..20), sample=[('O0000112', '0')]
+-- orders.unit_price: non_numeric=0, min=160.67, max=89926.78
+   not_positive=0
+-- orders.discount_pct: non_numeric=0, min=0.0, max=0.15
+   outside_0_to_1=0, distinct_values=[0.0, 0.05, 0.1, 0.15]
+-- orders.status counts: {'CANCELLED': 8461, 'DELIVERED': 8378, 'SHIPPED': 8372, 'PACKED': 8355, 'PAID': 8219, 'PENDING': 8219, 'UNKNOWN': 1}
+   not_in_allowed_as_written=1, not_in_allowed_after_trim_upper=1, sample=[('O0004445', 'UNKNOWN')]
+-- orders: updated_at_before_order_timestamp=0
+-- orders per year-month of order_timestamp (UTC): {'2025-01': 2465, '2025-02': 2286, '2025-03': 2461, '2025-04': 2416, '2025-05': 2544, '2025-06': 2474, '2025-07': 2464, '2025-08': 2513, '2025-09': 2435, '2025-10': 2458, '2025-11': 2372, '2025-12': 2497, '2026-01': 2513, '2026-02': 2296, '2026-03': 2479, '2026-04': 2380, '2026-05': 2504, '2026-06': 2449, '2026-07': 2503, '2026-08': 2545, '2026-09': 951}
+
+========================================================================
+cross-source checks
+========================================================================
+-- orders.customer_id not found in customers: rows=1, distinct_ids=1, match_after_trim_upper=0, sample=[('O0002223', 'C99999')]
+-- orders.product_id not found in products: rows=1, distinct_ids=1, match_after_trim_upper=0, sample=[('O0003334', 'P9999')]
+-- orders.unit_price vs latest products.unit_price (matched on product_id)
+   orders_with_a_matching_product=50004, comparable=50004
+   same_price=49905, different_price=99
+   distinct_products_among_differences=1
+   differences_where_product_price_not_positive=99
+   differences_where_order_precedes_product_update=34
+   products_among_differences (id, latest product price)=[('P0078', -199.0)]

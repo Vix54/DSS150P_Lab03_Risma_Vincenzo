@@ -1,0 +1,60 @@
+2026-09-21T18:44:05Z
+................                                                         [100%]
+16 passed in 0.71s
+2026-09-21T18:44:06Z INFO src.extract.files raw snapshot run_id=evidence_run_1 is already complete and verified; nothing to copy
+run_id=evidence_run_1
+raw_dir=data/raw/run_id=evidence_run_1
+2026-09-21T18:44:07Z INFO src.transform.stages customers: raw=3003 superseded=3 quarantined=0 staged=3000
+2026-09-21T18:44:07Z INFO src.transform.stages products: raw=601 superseded=1 quarantined=1 staged=599
+2026-09-21T18:44:07Z INFO src.transform.stages orders: raw=50005 superseded=5 quarantined=2 staged=49998
+run_id=evidence_run_1
+staging_dir=data/staging/run_id=evidence_run_1
+exit=0
+2026-09-21T18:44:07Z INFO src.transform.stages staging run_id=evidence_run_1 is already complete; nothing to do
+run_id=evidence_run_1
+staging_dir=data/staging/run_id=evidence_run_1
+exit=0
+data/quarantine/run_id=evidence_run_1:
+staging.parquet
+
+data/staging/run_id=evidence_run_1:
+_SUCCESS.json
+customers.parquet
+orders.parquet
+products.parquet
+{
+  "completed_at_utc": "2026-09-21T18:44:07.185418+00:00",
+  "counts": {
+    "customers": {
+      "quarantined_rows": 0,
+      "raw_rows": 3003,
+      "staged_rows": 3000,
+      "superseded_rows": 3
+    },
+    "orders": {
+      "quarantined_rows": 2,
+      "raw_rows": 50005,
+      "staged_rows": 49998,
+      "superseded_rows": 5
+    },
+    "products": {
+      "quarantined_rows": 1,
+      "raw_rows": 601,
+      "staged_rows": 599,
+      "superseded_rows": 1
+    }
+  },
+  "run_id": "evidence_run_1",
+  "stage": "staging"
+}customers: rows=3000, columns=['customer_id', 'first_name', 'last_name', 'email', 'email_missing', 'city', 'customer_tier', 'created_at', 'updated_at', 'pipeline_run_id', 'staged_at_utc']
+products: rows=599, columns=['product_id', 'name', 'brand', 'category_name', 'category_department', 'unit_price', 'active', 'updated_at', 'pipeline_run_id', 'staged_at_utc']
+orders: rows=49998, columns=['order_id', 'customer_id', 'product_id', 'order_timestamp', 'quantity', 'unit_price', 'discount_pct', 'status', 'updated_at', 'pipeline_run_id', 'staged_at_utc']
+customers with email_missing=4, distinct customer_id=3000
+orders distinct order_id=49998, statuses=['CANCELLED', 'DELIVERED', 'PACKED', 'PAID', 'PENDING', 'SHIPPED']
+  source business_key                    reasons   stage
+products        P0078 product_unit_price_invalid staging
+  orders     O0000112     order_quantity_invalid staging
+  orders     O0004445   order_status_not_allowed staging
+data/source/customers.csv: OK
+data/source/orders.csv: OK
+data/source/products.json: OK
