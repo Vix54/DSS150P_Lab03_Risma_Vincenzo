@@ -9,12 +9,14 @@
 - Source integrity baseline: `docs/evidence/source_sha256.txt` (SHA-256 of the three source files before any pipeline run).
 
 ## Week 5
-- Raw row counts:
-- Staging row counts:
-- Curated row counts:
-- Quarantine row counts:
-- First load affected rows:
-- Second rerun affected rows / evidence of idempotency:
+- Raw row counts: customers 3003, products 601, orders 50005 physical rows, recounted from the raw files by `validate` (`docs/evidence/goal2_staging.txt`, `docs/evidence/goal2_validate_runall.txt`).
+- Staging row counts: customers 3000, products 599, orders 49998. Superseded versions were 3, 1 and 5, and the staging quarantine held 0, 1 and 2 records, so raw rows equal staged plus superseded plus quarantined for every source (`docs/evidence/goal2_staging.txt`).
+- Curated row counts: 49897 rows in `sales_order_lines` from 49998 staged orders (`docs/evidence/goal2_curated.txt`).
+- Quarantine row counts: 104 records in total. Staging rejected 3 (`P0078` for a negative price, `O0000112` for quantity 0, `O0004445` for status `UNKNOWN`). The curated stage rejected 101 (99 `order_product_quarantined`, 1 `order_customer_not_found`, 1 `order_product_not_found`). Reasons are defined in `docs/data_quality_rules.md`.
+- First load affected rows: 49897 inserted, 0 updated (`docs/evidence/goal2_load.txt`).
+- Second rerun affected rows / evidence of idempotency: 0 inserted, 0 updated, 49897 unchanged. A load of a second run ID with identical content also changed nothing, and `COUNT(*)` equals `COUNT(DISTINCT order_id)` in `curated.sales_order_lines` (`docs/evidence/goal2_load.txt`). Editing one stored row and reloading updated exactly that row (`docs/evidence/goal2_load_repair.txt`).
+- Sample audit columns: `docs/evidence/goal2_audit_sample.txt`.
+- Error-handling evidence: an unreachable database and a missing curated run each stop the stage with a message naming the stage and exit code 1 (`docs/evidence/goal2_load.txt`, `docs/evidence/goal2_validate_runall.txt`); the unit tests in `tests/` cover missing sources, tampered snapshots, tied versions and unexpected exceptions.
 
 ## Week 6
 - Benchmark table attached: yes/no
