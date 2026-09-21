@@ -1,4 +1,5 @@
 import logging
+from datetime import datetime, timezone
 
 import numpy as np
 import pandas as pd
@@ -92,5 +93,14 @@ def record_run(connection, run_id, started_at, completed_at, status, counts, mes
         )
 
 
-def load_partition(df, year: int, month: int, run_id: str) -> int:
-    raise NotImplementedError('Implement Goal 3 selected-partition load')
+def load_partition(connection, df, year, month, run_id):
+    outcome = upsert_curated(connection, df)
+    with connection.cursor() as cursor:
+        cursor.execute(
+            'INSERT INTO audit.partition_loads (partition_key, loaded_at_utc, row_count, pipeline_run_id) '
+            'VALUES (%s, %s, %s, %s) '
+            'ON CONFLICT (partition_key) DO UPDATE SET '
+            'loaded_at_utc = EXCLUDED.loaded_at_utc, row_count = EXCLUDED.row_count, pipeline_run_id = EXCLUDED.pipeline_run_id',
+            (f'{year:04d}-{month:02d}', datetime.now(timezone.utc), len(df), run_id),
+        )
+    return outcome

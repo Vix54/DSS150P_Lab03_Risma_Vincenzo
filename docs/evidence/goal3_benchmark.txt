@@ -1,0 +1,83 @@
+2026-09-21T20:31:56Z
+..............................................                           [100%]
+46 passed in 2.21s
+2026-09-21T20:32:12Z INFO src.benchmark.storage csv: size=14181711 write=0.9753s full_read=0.2506s filtered_read=0.2427s
+2026-09-21T20:32:29Z INFO src.benchmark.storage jsonl: size=30467326 write=0.9985s full_read=0.6562s filtered_read=0.7126s
+2026-09-21T20:32:33Z INFO src.benchmark.storage parquet_snappy: size=5396477 write=0.1786s full_read=0.1132s filtered_read=0.0355s
+2026-09-21T20:32:38Z INFO src.benchmark.storage parquet_zstd: size=3421025 write=0.1827s full_read=0.1084s filtered_read=0.0326s
+curated_run_id=cleanroom_1
+storage_type,file_size_bytes,write_seconds,full_read_seconds,filtered_read_seconds,row_count
+csv,14181711,0.97533,0.250647,0.242682,49897
+jsonl,30467326,0.998461,0.656155,0.712578,49897
+parquet_snappy,5396477,0.178575,0.113206,0.035548,49897
+parquet_zstd,3421025,0.182706,0.108439,0.03261,49897
+postgresql,15261696,1.036779,1.157901,0.185814,49897
+postgresql_status_index,15605760,0.043925,1.183047,0.189581,49897
+exit=0
+storage_type,file_size_bytes,write_seconds,full_read_seconds,filtered_read_seconds,row_count,notes
+csv,14181711,0.97533,0.250647,0.242682,49897,filtered_rows=8355; hash_mismatches=0; same_row_set=True; read_csv with type inference; the filter runs after a full read
+jsonl,30467326,0.998461,0.656155,0.712578,49897,filtered_rows=8355; hash_mismatches=0; same_row_set=True; one JSON object per line with money as exact strings; the filter runs after a full read
+parquet_snappy,5396477,0.178575,0.113206,0.035548,49897,filtered_rows=8355; hash_mismatches=0; same_row_set=True; compression=snappy; typed columnar file; the filter is pushed down to the reader
+parquet_zstd,3421025,0.182706,0.108439,0.03261,49897,filtered_rows=8355; hash_mismatches=0; same_row_set=True; compression=zstd; typed columnar file; the filter is pushed down to the reader
+postgresql,15261696,1.036779,1.157901,0.185814,49897,"size=pg_total_relation_size with primary key index (table_bytes=13631488, index_bytes=1589248); write=COPY plus commit; filtered_rows=8355; plan=Seq Scan; hash_mismatches=0; server=16.15 (Debian 16.15-1.pgdg13+2)"
+postgresql_status_index,15605760,0.043925,1.183047,0.189581,49897,write_seconds is CREATE INDEX on status; size includes both indexes (index_bytes=1957888); filtered_rows=8355; plan=Bitmap Heap Scan
+run=cleanroom_1, rows=49897, repeats=5, environment={'python': '3.11.16', 'platform': 'Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43', 'pandas': '2.2.3', 'pyarrow': '17.0.0', 'psycopg': '3.2.3', 'postgresql': '16.15 (Debian 16.15-1.pgdg13+2)'}
+csv: hash_mismatches=0, same_row_set=True, filtered_rows=8355, full_read_runs=[0.2506, 0.2604, 0.2271, 0.2548, 0.2471]
+jsonl: hash_mismatches=0, same_row_set=True, filtered_rows=8355, full_read_runs=[0.7868, 0.6501, 0.6562, 0.603, 0.7366]
+parquet_snappy: hash_mismatches=0, same_row_set=True, filtered_rows=8355, full_read_runs=[0.1194, 0.1042, 0.1132, 0.0958, 0.1266]
+parquet_zstd: hash_mismatches=0, same_row_set=True, filtered_rows=8355, full_read_runs=[0.118, 0.1077, 0.1087, 0.1013, 0.1084]
+postgresql_plain: plan=Seq Scan, execution_ms=7.716, total_bytes=15261696
+postgresql_indexed: plan=Bitmap Heap Scan, execution_ms=3.423, total_bytes=15605760
+postgresql: hash_mismatches=0
+partitions=21, rows_per_partition=951..2540
+selected={'order_year': 2026, 'order_month': 1}, rows_read=2506, expected=2506, all_in_month=True
+files_read: selected=1 of 21, bytes_read: selected=335453 of 6740181
+read_median_seconds: selected_partition=0.0153, whole_dataset=0.1218
+data/partitioned/_SUCCESS.json
+data/partitioned/order_year=2025/order_month=1/part-0.parquet
+data/partitioned/order_year=2025/order_month=10/part-0.parquet
+data/partitioned/order_year=2025/order_month=11/part-0.parquet
+data/partitioned/order_year=2025/order_month=12/part-0.parquet
+data/partitioned/order_year=2025/order_month=2/part-0.parquet
+data/partitioned/order_year=2025/order_month=3/part-0.parquet
+data/partitioned/order_year=2025/order_month=4/part-0.parquet
+data/partitioned/order_year=2025/order_month=5/part-0.parquet
+data/partitioned/order_year=2025/order_month=6/part-0.parquet
+data/partitioned/order_year=2025/order_month=7/part-0.parquet
+data/partitioned/order_year=2025/order_month=8/part-0.parquet
+data/partitioned/order_year=2025/order_month=9/part-0.parquet
+data/partitioned/order_year=2026/order_month=1/part-0.parquet
+data/partitioned/order_year=2026/order_month=2/part-0.parquet
+data/partitioned/order_year=2026/order_month=3/part-0.parquet
+data/partitioned/order_year=2026/order_month=4/part-0.parquet
+data/partitioned/order_year=2026/order_month=5/part-0.parquet
+data/partitioned/order_year=2026/order_month=6/part-0.parquet
+data/partitioned/order_year=2026/order_month=7/part-0.parquet
+data/partitioned/order_year=2026/order_month=8/part-0.parquet
+data/partitioned/order_year=2026/order_month=9/part-0.parquet
+ count 
+-------
+  8355
+(1 row)
+
+ count 
+-------
+  2506
+(1 row)
+
+data/source/customers.csv: OK
+data/source/orders.csv: OK
+data/source/products.json: OK
+ M .gitignore
+ M config/settings.yml
+ M src/benchmark/storage.py
+ M src/cli.py
+ M src/load/postgres.py
+?? data/benchmarks/
+?? docs/evidence/goal3_benchmark.txt
+?? src/benchmark/formats.py
+?? src/benchmark/partitions.py
+?? src/benchmark/postgres_bench.py
+?? src/benchmark/timing.py
+?? src/load/partitions.py
+?? tests/test_benchmark_helpers.py

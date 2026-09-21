@@ -1,0 +1,21 @@
+2026-09-21T20:35:44Z
+2026-09-21T20:35:45Z INFO src.load.partitions partition 2026-01 loaded from run cleanroom_1: rows_in=2506 inserted=0 updated=0 unchanged=2506
+partition=2026-01 source_run_id=cleanroom_1
+rows_in=2506 inserted=0 updated=0 unchanged=2506
+exit=0
+2026-09-21T20:35:46Z INFO src.load.partitions partition 2026-01 loaded from run cleanroom_1: rows_in=2506 inserted=0 updated=0 unchanged=2506
+partition=2026-01 source_run_id=cleanroom_1
+rows_in=2506 inserted=0 updated=0 unchanged=2506
+exit=0
+ partition_key |         loaded_at_utc         | row_count | pipeline_run_id 
+---------------+-------------------------------+-----------+-----------------
+ 2026-01       | 2026-09-21 20:35:46.254536+00 |      2506 | cleanroom_1
+(1 row)
+
+ total | distinct_orders 
+-------+-----------------
+ 49897 |           49897
+(1 row)
+
+2026-09-21T20:35:47Z ERROR cli [load-partition] partition 2030-05 does not exist or has no rows
+exit=1
