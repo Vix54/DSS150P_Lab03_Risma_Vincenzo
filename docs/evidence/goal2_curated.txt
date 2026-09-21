@@ -1,0 +1,65 @@
+2026-09-21T19:00:06Z
+......................                                                   [100%]
+22 passed in 0.91s
+2026-09-21T19:00:08Z INFO src.transform.stages staging run_id=evidence_run_1 is already complete; nothing to do
+2026-09-21T19:00:09Z INFO src.transform.stages curated: orders_staged=49998 curated=49897 quarantined=101 reasons={'order_product_quarantined': 99, 'order_customer_not_found': 1, 'order_product_not_found': 1}
+run_id=evidence_run_1
+staging_dir=data/staging/run_id=evidence_run_1
+curated_dir=data/curated/run_id=evidence_run_1
+exit=0
+2026-09-21T19:00:10Z INFO src.transform.stages staging run_id=evidence_run_1 is already complete; nothing to do
+2026-09-21T19:00:10Z INFO src.transform.stages curated run_id=evidence_run_1 is already complete; nothing to do
+run_id=evidence_run_1
+staging_dir=data/staging/run_id=evidence_run_1
+curated_dir=data/curated/run_id=evidence_run_1
+exit=0
+2026-09-21T19:00:10Z INFO src.extract.files copied customers.csv (351125 bytes)
+2026-09-21T19:00:10Z INFO src.extract.files copied products.json (160497 bytes)
+2026-09-21T19:00:10Z INFO src.extract.files copied orders.csv (4856331 bytes)
+2026-09-21T19:00:10Z INFO src.extract.files raw snapshot run_id=evidence_run_2 complete with 3 files
+run_id=evidence_run_2
+raw_dir=data/raw/run_id=evidence_run_2
+2026-09-21T19:00:11Z INFO src.transform.stages customers: raw=3003 superseded=3 quarantined=0 staged=3000
+2026-09-21T19:00:11Z INFO src.transform.stages products: raw=601 superseded=1 quarantined=1 staged=599
+2026-09-21T19:00:11Z INFO src.transform.stages orders: raw=50005 superseded=5 quarantined=2 staged=49998
+2026-09-21T19:00:12Z INFO src.transform.stages curated: orders_staged=49998 curated=49897 quarantined=101 reasons={'order_product_quarantined': 99, 'order_customer_not_found': 1, 'order_product_not_found': 1}
+run_id=evidence_run_2
+staging_dir=data/staging/run_id=evidence_run_2
+curated_dir=data/curated/run_id=evidence_run_2
+exit=0
+data/curated/run_id=evidence_run_1:
+_SUCCESS.json
+sales_order_lines.parquet
+
+data/quarantine/run_id=evidence_run_1:
+curated.parquet
+staging.parquet
+{
+  "completed_at_utc": "2026-09-21T19:00:09.920883+00:00",
+  "counts": {
+    "curated_rows": 49897,
+    "orders_staged": 49998,
+    "quarantined_by_reason": {
+      "order_customer_not_found": 1,
+      "order_product_not_found": 1,
+      "order_product_quarantined": 99
+    },
+    "quarantined_rows": 101
+  },
+  "run_id": "evidence_run_1",
+  "stage": "curated"
+}curated rows run 1=49897, run 2=49897, order_id unique=True
+same order ids=True, identical record_hash=True
+pipeline_run_id differs=True, processed_at_utc differs=True
+amounts rechecked from the raw CSV text=49897, mismatches=0
+reasons
+order_customer_not_found      1
+order_product_not_found       1
+order_product_quarantined    99
+source business_key                   reasons   stage
+orders     O0000204 order_product_quarantined curated
+orders     O0002223  order_customer_not_found curated
+orders     O0003334   order_product_not_found curated
+data/source/customers.csv: OK
+data/source/orders.csv: OK
+data/source/products.json: OK
