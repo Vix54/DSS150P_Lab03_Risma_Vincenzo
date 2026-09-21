@@ -1,0 +1,66 @@
+2026-09-21T19:50:52Z
+/home/enzo/DSS150P_Lab03_Risma_Vincenzo
+curated
+quarantine
+raw
+source
+staging
+21M	data/raw
+6.6M	data/staging
+21M	data/curated
+116K	data/quarantine
+source
+2026-09-21T19:50:52Z INFO src.extract.files copied customers.csv (351125 bytes)
+2026-09-21T19:50:52Z INFO src.extract.files copied products.json (160497 bytes)
+2026-09-21T19:50:52Z INFO src.extract.files copied orders.csv (4856331 bytes)
+2026-09-21T19:50:52Z INFO src.extract.files raw snapshot run_id=cleanroom_1 complete with 3 files
+2026-09-21T19:50:52Z INFO src.transform.stages customers: raw=3003 superseded=3 quarantined=0 staged=3000
+2026-09-21T19:50:52Z INFO src.transform.stages products: raw=601 superseded=1 quarantined=1 staged=599
+2026-09-21T19:50:52Z INFO src.transform.stages orders: raw=50005 superseded=5 quarantined=2 staged=49998
+2026-09-21T19:50:54Z INFO src.transform.stages curated: orders_staged=49998 curated=49897 quarantined=101 reasons={'order_product_quarantined': 99, 'order_customer_not_found': 1, 'order_product_not_found': 1}
+2026-09-21T19:50:55Z INFO src.load.stages load cleanroom_1: rows_in=49897 inserted=0 updated=0 unchanged=49897
+2026-09-21T19:50:55Z INFO src.validate.stages check passed: source and raw file hashes
+2026-09-21T19:50:55Z INFO src.validate.stages check passed: row counts reconcile across layers
+2026-09-21T19:50:56Z INFO src.validate.stages check passed: curated rules V-01 to V-10
+2026-09-21T19:50:57Z INFO src.validate.stages check passed: PostgreSQL V-11, hash match and audit row
+2026-09-21T19:50:57Z INFO src.validate.stages validation of cleanroom_1 passed: 4 checks, 49897 curated rows
+run_id=cleanroom_1
+load: inserted=0 updated=0 unchanged=49897
+validation=passed checks=4 rows_checked=49897
+exit=0
+data/curated/run_id=cleanroom_1/_SUCCESS.json
+data/curated/run_id=cleanroom_1/sales_order_lines.parquet
+data/quarantine/run_id=cleanroom_1/curated.parquet
+data/quarantine/run_id=cleanroom_1/staging.parquet
+data/raw/run_id=cleanroom_1/_SUCCESS.json
+data/raw/run_id=cleanroom_1/customers.csv
+data/raw/run_id=cleanroom_1/manifest.json
+data/raw/run_id=cleanroom_1/orders.csv
+data/raw/run_id=cleanroom_1/products.json
+data/staging/run_id=cleanroom_1/_SUCCESS.json
+data/staging/run_id=cleanroom_1/customers.parquet
+data/staging/run_id=cleanroom_1/orders.parquet
+data/staging/run_id=cleanroom_1/products.parquet
+2026-09-21T19:50:59Z INFO src.load.stages load cleanroom_1: rows_in=49897 inserted=0 updated=0 unchanged=49897
+run_id=cleanroom_1
+rows_in=49897 inserted=0 updated=0 unchanged=49897
+exit=0
+2026-09-21T19:50:59Z INFO src.validate.stages check passed: source and raw file hashes
+2026-09-21T19:51:00Z INFO src.validate.stages check passed: row counts reconcile across layers
+2026-09-21T19:51:01Z INFO src.validate.stages check passed: curated rules V-01 to V-10
+2026-09-21T19:51:02Z INFO src.validate.stages check passed: PostgreSQL V-11, hash match and audit row
+2026-09-21T19:51:02Z INFO src.validate.stages validation of cleanroom_1 passed: 4 checks, 49897 curated rows
+run_id=cleanroom_1
+validation=passed checks=4 rows_checked=49897
+exit=0
+ total | distinct_orders 
+-------+-----------------
+ 49897 |           49897
+(1 row)
+
+....................................                                     [100%]
+36 passed in 0.65s
+data/source/customers.csv: OK
+data/source/orders.csv: OK
+data/source/products.json: OK
+?? docs/evidence/goal2_cleanroom.txt
