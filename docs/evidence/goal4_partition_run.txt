@@ -1,0 +1,27 @@
+2026-09-22T18:17:15Z
+[2026-09-22T18:17:17.400+0000] {__init__.py:43} INFO - Loaded API auth backend: airflow.api.auth.backend.session
+                   |                   |                   | data_interval_sta |                   |          |                  | last_scheduling_ |                   |          |            |       
+conf               | dag_id            | dag_run_id        | rt                | data_interval_end | end_date | external_trigger | decision         | logical_date      | run_type | start_date | state 
+===================+===================+===================+===================+===================+==========+==================+==================+===================+==========+============+=======
+{'run_mode':       | dss150p_sales_pip | manual_partition_ | 2026-09-21        | 2026-09-22        | None     | True             | None             | 2026-09-22        | manual   | None       | queued
+'partition',       | eline             | 1                 | 02:00:00+00:00    | 02:00:00+00:00    |          |                  |                  | 18:17:17+00:00    |          |            |       
+'year': 2026,      |                   |                   |                   |                   |          |                  |                  |                   |          |            |       
+'month': 1}        |                   |                   |                   |                   |          |                  |                  |                   |          |            |       
+                                                                                                                                                                                                        
+poll 1 state=running
+poll 2 state=success
+dag_id                  execution_date             task_id    state    start_date                        end_date
+dss150p_sales_pipeline  2026-09-22T18:17:17+00:00  transform  success  2026-09-22T18:17:19.566975+00:00  2026-09-22T18:17:22.733633+00:00
+dss150p_sales_pipeline  2026-09-22T18:17:17+00:00  extract    success  2026-09-22T18:17:18.493654+00:00  2026-09-22T18:17:19.007467+00:00
+dss150p_sales_pipeline  2026-09-22T18:17:17+00:00  load       success  2026-09-22T18:17:23.501605+00:00  2026-09-22T18:17:24.996699+00:00
+dss150p_sales_pipeline  2026-09-22T18:17:17+00:00  validate   success  2026-09-22T18:17:25.649413+00:00  2026-09-22T18:17:28.435821+00:00
+ partition_key |         loaded_at_utc         | row_count |  pipeline_run_id   
+---------------+-------------------------------+-----------+--------------------
+ 2026-01       | 2026-09-22 18:17:24.817199+00 |      2506 | manual_partition_1
+(1 row)
+
+ event_id |   event_type   |  pipeline_run_id   | partition_key | status | rows_inserted | rows_updated | rows_unchanged 
+----------+----------------+--------------------+---------------+--------+---------------+--------------+----------------
+        6 | partition_load | manual_partition_1 | 2026-01       | loaded |             0 |            0 |           2506
+(1 row)
+

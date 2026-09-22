@@ -1,0 +1,33 @@
+2026-09-22T18:12:51Z
+dag_id                 | is_paused
+=======================+==========
+dss150p_sales_pipeline | False    
+                                  
+[2026-09-22T18:12:56.733+0000] {__init__.py:43} INFO - Loaded API auth backend: airflow.api.auth.backend.session
+     |                      |               |                      |                       |          |                  | last_scheduling_deci |                       |          |            |       
+conf | dag_id               | dag_run_id    | data_interval_start  | data_interval_end     | end_date | external_trigger | sion                 | logical_date          | run_type | start_date | state 
+=====+======================+===============+======================+=======================+==========+==================+======================+=======================+==========+============+=======
+{}   | dss150p_sales_pipeli | manual_full_1 | 2026-09-21           | 2026-09-22            | None     | True             | None                 | 2026-09-22            | manual   | None       | queued
+     | ne                   |               | 02:00:00+00:00       | 02:00:00+00:00        |          |                  |                      | 18:12:57+00:00        |          |            |       
+                                                                                                                                                                                                        
+poll 1 state=queued
+poll 2 state=running
+poll 3 state=success
+dag_id                  run_id                                state    execution_date             start_date                        end_date
+dss150p_sales_pipeline  manual_full_1                         success  2026-09-22T18:12:57+00:00  2026-09-22T18:13:09.685995+00:00  2026-09-22T18:13:21.933972+00:00
+dss150p_sales_pipeline  scheduled__2026-09-21T02:00:00+00:00  success  2026-09-21T02:00:00+00:00  2026-09-22T18:12:54.232984+00:00  2026-09-22T18:13:08.823074+00:00
+dag_id                  execution_date             task_id    state    start_date                        end_date
+dss150p_sales_pipeline  2026-09-22T18:12:57+00:00  transform  success  2026-09-22T18:13:11.029065+00:00  2026-09-22T18:13:14.143584+00:00
+dss150p_sales_pipeline  2026-09-22T18:12:57+00:00  extract    success  2026-09-22T18:13:09.958430+00:00  2026-09-22T18:13:10.506728+00:00
+dss150p_sales_pipeline  2026-09-22T18:12:57+00:00  load       success  2026-09-22T18:13:14.480209+00:00  2026-09-22T18:13:17.786952+00:00
+dss150p_sales_pipeline  2026-09-22T18:12:57+00:00  validate   success  2026-09-22T18:13:18.109922+00:00  2026-09-22T18:13:21.734485+00:00
+ pipeline_run_id | status | rows_staging | rows_curated | rows_quarantined |               message                
+-----------------+--------+--------------+--------------+------------------+--------------------------------------
+ manual_full_1   | loaded |        49998 |        49897 |              104 | inserted=0 updated=0 unchanged=49897
+(1 row)
+
+ event_id | event_type | pipeline_run_id | status | rows_inserted | rows_updated | rows_unchanged 
+----------+------------+-----------------+--------+---------------+--------------+----------------
+        5 | load       | manual_full_1   | loaded |             0 |            0 |          49897
+(1 row)
+
