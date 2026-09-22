@@ -1,0 +1,89 @@
+2026-09-22T20:37:37Z
+== Goal 1: environment ==
+python_version=3.11.16
+pandas==2.2.3
+pyarrow==17.0.0
+psycopg==3.2.3
+python-dotenv==1.0.1
+PyYAML==6.0.2
+project_root=/home/enzo/DSS150P_Lab03_Risma_Vincenzo
+db_target=localhost:5432/dss150p user=dss150p
+environment_ok=True
+exit=0
+time="2026-09-23T04:37:37+08:00" level=warning msg="Found orphan containers (dss150p-airflow-scheduler, dss150p-airflow-webserver, dss150p-airflow-init) for this project. If you removed or renamed this service in your compose file, you can run this command with the --remove-orphans flag to clean it up."
+ Container dss150p-postgres Running 
+NAME                        IMAGE                                            COMMAND                  SERVICE             CREATED       STATUS                 PORTS
+dss150p-airflow-scheduler   dss150p_lab03_risma_vincenzo-airflow-scheduler   "/usr/bin/dumb-init …"   airflow-scheduler   2 hours ago   Up 2 hours             8080/tcp
+dss150p-airflow-webserver   dss150p_lab03_risma_vincenzo-airflow-webserver   "/usr/bin/dumb-init …"   airflow-webserver   2 hours ago   Up 2 hours (healthy)   127.0.0.1:8080->8080/tcp
+dss150p-postgres            postgres:16                                      "docker-entrypoint.s…"   postgres            2 hours ago   Up 2 hours (healthy)   127.0.0.1:5432->5432/tcp
+== Goal 2: full pipeline ==
+2026-09-22T20:37:43Z INFO src.extract.files copied customers.csv (351125 bytes)
+2026-09-22T20:37:43Z INFO src.extract.files copied products.json (160497 bytes)
+2026-09-22T20:37:43Z INFO src.extract.files copied orders.csv (4856331 bytes)
+2026-09-22T20:37:43Z INFO src.extract.files raw snapshot run_id=run_20260922T203743Z_6a19dfe2 complete with 3 files
+2026-09-22T20:37:44Z INFO src.transform.stages customers: raw=3003 superseded=3 quarantined=0 staged=3000
+2026-09-22T20:37:44Z INFO src.transform.stages products: raw=601 superseded=1 quarantined=1 staged=599
+2026-09-22T20:37:44Z INFO src.transform.stages orders: raw=50005 superseded=5 quarantined=2 staged=49998
+2026-09-22T20:37:46Z INFO src.transform.stages curated: orders_staged=49998 curated=49897 quarantined=101 reasons={'order_product_quarantined': 99, 'order_customer_not_found': 1, 'order_product_not_found': 1}
+2026-09-22T20:37:48Z INFO src.load.stages load run_20260922T203743Z_6a19dfe2: rows_in=49897 inserted=0 updated=0 unchanged=49897
+2026-09-22T20:37:48Z INFO src.validate.stages check passed: source and raw file hashes
+2026-09-22T20:37:48Z INFO src.validate.stages check passed: row counts reconcile across layers
+2026-09-22T20:37:50Z INFO src.validate.stages check passed: curated rules V-01 to V-10
+2026-09-22T20:37:51Z INFO src.validate.stages check passed: PostgreSQL V-11, hash match, audit rows and load events
+2026-09-22T20:37:51Z INFO src.validate.stages validation of run_20260922T203743Z_6a19dfe2 passed: 4 checks, 49897 curated rows
+run_id=run_20260922T203743Z_6a19dfe2
+load: inserted=0 updated=0 unchanged=49897
+validation=passed checks=4 rows_checked=49897
+exit=0
+2026-09-22T20:37:53Z INFO src.load.stages load run_20260922T203743Z_6a19dfe2: rows_in=49897 inserted=0 updated=0 unchanged=49897
+run_id=run_20260922T203743Z_6a19dfe2
+rows_in=49897 inserted=0 updated=0 unchanged=49897
+exit=0
+2026-09-22T20:37:54Z INFO src.validate.stages check passed: source and raw file hashes
+2026-09-22T20:37:54Z INFO src.validate.stages check passed: row counts reconcile across layers
+2026-09-22T20:37:55Z INFO src.validate.stages check passed: curated rules V-01 to V-10
+2026-09-22T20:37:56Z INFO src.validate.stages check passed: PostgreSQL V-11, hash match, audit rows and load events
+2026-09-22T20:37:56Z INFO src.validate.stages validation of run_20260922T203743Z_6a19dfe2 passed: 4 checks, 49897 curated rows
+run_id=run_20260922T203743Z_6a19dfe2
+validation=passed checks=4 rows_checked=49897
+exit=0
+== Goal 3: benchmark and partition ==
+2026-09-22T20:38:05Z INFO src.benchmark.storage csv: size=15079857 write=0.6261s full_read=0.1709s filtered_read=0.1720s
+2026-09-22T20:38:19Z INFO src.benchmark.storage jsonl: size=31365472 write=0.6621s full_read=0.5661s filtered_read=0.5963s
+2026-09-22T20:38:23Z INFO src.benchmark.storage parquet_snappy: size=5360235 write=0.1240s full_read=0.0841s filtered_read=0.0294s
+2026-09-22T20:38:26Z INFO src.benchmark.storage parquet_zstd: size=3431417 write=0.1258s full_read=0.0771s filtered_read=0.0326s
+curated_run_id=run_20260922T203743Z_6a19dfe2
+storage_type,file_size_bytes,write_seconds,full_read_seconds,filtered_read_seconds,row_count
+csv,15079857,0.626124,0.170909,0.171962,49897
+jsonl,31365472,0.662136,0.566087,0.596285,49897
+parquet_snappy,5360235,0.123967,0.084117,0.029357,49897
+parquet_zstd,3431417,0.125786,0.077133,0.032611,49897
+postgresql,16310272,0.58275,0.76008,0.124906,49897
+postgresql_status_index,16343040,0.033741,0.778225,0.141499,49897
+exit=0
+2026-09-22T20:38:47Z INFO src.load.partitions partition 2026-01 loaded from run run_20260922T203743Z_6a19dfe2: rows_in=2506 inserted=0 updated=0 unchanged=2506
+partition=2026-01 source_run_id=run_20260922T203743Z_6a19dfe2
+rows_in=2506 inserted=0 updated=0 unchanged=2506
+exit=0
+== Goal 4: Airflow ==
+ Container dss150p-airflow-webserver Running 
+ Container dss150p-airflow-scheduler Running 
+ Container dss150p-postgres Running 
+ Container dss150p-postgres Waiting 
+ Container dss150p-postgres Waiting 
+ Container dss150p-postgres Healthy 
+ Container dss150p-postgres Healthy 
+NAME                        IMAGE                                            COMMAND                  SERVICE             CREATED       STATUS                 PORTS
+dss150p-airflow-scheduler   dss150p_lab03_risma_vincenzo-airflow-scheduler   "/usr/bin/dumb-init …"   airflow-scheduler   3 hours ago   Up 3 hours             8080/tcp
+dss150p-airflow-webserver   dss150p_lab03_risma_vincenzo-airflow-webserver   "/usr/bin/dumb-init …"   airflow-webserver   3 hours ago   Up 3 hours (healthy)   127.0.0.1:8080->8080/tcp
+dss150p-postgres            postgres:16                                      "docker-entrypoint.s…"   postgres            3 hours ago   Up 3 hours (healthy)   127.0.0.1:5432->5432/tcp
+webserver_health_http_status=200
+== Final integrity check ==
+ total | distinct_orders 
+-------+-----------------
+ 49897 |           49897
+(1 row)
+
+ M data/benchmarks/benchmark_details.json
+ M data/benchmarks/benchmark_results.csv
+?? docs/evidence/goal_section11_integrated_test.txt
