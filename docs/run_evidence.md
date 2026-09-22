@@ -25,10 +25,10 @@
 - PostgreSQL verification query:
 
 ## Week 7
-- DAG ID:
-- Schedule:
-- Parameters used:
-- Successful run ID:
-- Deliberate failure run ID:
-- Retry/failure-handling evidence:
-- Final recovery run ID:
+- DAG ID: `dss150p_sales_pipeline` (`dags/dss150p_pipeline.py`)
+- Schedule: `0 2 * * *` (daily, 02:00 UTC), `catchup=False`, `max_active_runs=1`
+- Parameters used: `run_mode` (`full`/`partition`), `year`, `month`; full run `manual_full_1`, partition run `manual_partition_1` with `{"run_mode":"partition","year":2026,"month":1}` (`docs/evidence/goal4_full_run.txt`, `docs/evidence/goal4_partition_run.txt`)
+- Successful run ID: `manual_full_1` (all 4 tasks succeeded; `audit.pipeline_runs` shows `inserted=0 updated=0 unchanged=49897`) and `manual_partition_1` (`audit.partition_loads` shows `2026-01`, 2506 rows)
+- Deliberate failure run ID: `manual_failure_1`, triggered with `data/source/orders.csv` renamed away
+- Retry/failure-handling evidence: `extract` retried twice then failed on try 3; `transform`, `load`, `validate` correctly marked `upstream_failed`; the failure callback wrote 3 entries (2 `retry`, 1 `failure`) to `logs/dss150p_failures.jsonl` (`docs/evidence/goal4_failure.txt`)
+- Final recovery run ID: `manual_failure_1` (source restored, SHA-256 verified against `docs/evidence/source_sha256.txt`, failed tasks cleared, all 4 tasks completed `success`, `total = distinct_orders = 49897`) (`docs/evidence/goal4_recovery.txt`)
