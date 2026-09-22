@@ -16,12 +16,16 @@ def build_parser():
     for name in STAGE_COMMANDS:
         stage_parser = sub.add_parser(name)
         stage_parser.add_argument('--run-id')
+        if name == 'validate':
+            stage_parser.add_argument('--year', type=int)
+            stage_parser.add_argument('--month', type=int)
     benchmark = sub.add_parser('benchmark')
     benchmark.add_argument('--repeats', type=int)
     benchmark.add_argument('--run-id')
     partition = sub.add_parser('load-partition')
     partition.add_argument('--year', type=int, required=True)
     partition.add_argument('--month', type=int, required=True)
+    partition.add_argument('--run-id')
     return parser
 
 
@@ -63,8 +67,11 @@ def run_validate_command(args):
     from src.common.runs import resolve_run_id_for_stage
     from src.validate.stages import run_validate
 
+    if (args.year is None) != (args.month is None):
+        raise PipelineError('validate', '--year and --month must be given together')
+    partition = (args.year, args.month) if args.year is not None else None
     run_id = resolve_run_id_for_stage(args.run_id, 'curated_dir')
-    summary = run_validate(run_id)
+    summary = run_validate(run_id, partition)
     print(f'run_id={run_id}')
     print(f"validation=passed checks={summary['checks']} rows_checked={summary['rows_checked']}")
 
@@ -85,9 +92,11 @@ def run_benchmark_command(args):
 
 
 def run_load_partition_command(args):
+    from src.common.runs import resolve_run_id_for_stage
     from src.load.partitions import run_load_partition
 
-    run_id, outcome = run_load_partition(args.year, args.month)
+    run_id = resolve_run_id_for_stage(args.run_id, 'curated_dir')
+    outcome = run_load_partition(args.year, args.month, run_id)
     print(f'partition={args.year:04d}-{args.month:02d} source_run_id={run_id}')
     print(f"rows_in={outcome['rows_in']} inserted={outcome['inserted']} updated={outcome['updated']} unchanged={outcome['unchanged']}")
 

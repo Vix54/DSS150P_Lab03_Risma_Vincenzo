@@ -1,0 +1,32 @@
+2026-09-22T18:57:32Z
+mv: cannot stat 'data/source/orders.csv.bak': No such file or directory
+total 5248
+-rw-r--r-- 1 enzo enzo  351125 Sep 21 22:19 customers.csv
+-rw-r--r-- 1 enzo enzo 4856331 Sep 21 22:19 orders.csv
+-rw-r--r-- 1 enzo enzo  160497 Sep 21 22:19 products.json
+data/source/customers.csv: OK
+data/source/orders.csv: OK
+data/source/products.json: OK
+[2026-09-22T18:57:34.737+0000] {dagbag.py:588} INFO - Filling up the DagBag from /opt/airflow/dags
+Nothing to clear.
+recovery poll 1 state=success
+dag_id                  execution_date             task_id    state    start_date                        end_date
+dss150p_sales_pipeline  2026-09-22T18:54:43+00:00  extract    success  2026-09-22T18:56:57.962292+00:00  2026-09-22T18:56:58.498962+00:00
+dss150p_sales_pipeline  2026-09-22T18:54:43+00:00  transform  success  2026-09-22T18:56:58.927131+00:00  2026-09-22T18:57:02.439370+00:00
+dss150p_sales_pipeline  2026-09-22T18:54:43+00:00  load       success  2026-09-22T18:57:03.190776+00:00  2026-09-22T18:57:06.948680+00:00
+dss150p_sales_pipeline  2026-09-22T18:54:43+00:00  validate   success  2026-09-22T18:57:07.273455+00:00  2026-09-22T18:57:11.186862+00:00
+ pipeline_run_id  | status | rows_staging | rows_curated | rows_quarantined |               message                
+------------------+--------+--------------+--------------+------------------+--------------------------------------
+ manual_failure_1 | loaded |        49998 |        49897 |              104 | inserted=0 updated=0 unchanged=49897
+(1 row)
+
+ event_id | event_type | pipeline_run_id  | status | rows_inserted | rows_updated | rows_unchanged |               message                
+----------+------------+------------------+--------+---------------+--------------+----------------+--------------------------------------
+        7 | load       | manual_failure_1 | loaded |             0 |            0 |          49897 | inserted=0 updated=0 unchanged=49897
+(1 row)
+
+ total | distinct_orders 
+-------+-----------------
+ 49897 |           49897
+(1 row)
+

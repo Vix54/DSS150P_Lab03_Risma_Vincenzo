@@ -93,14 +93,39 @@ def record_run(connection, run_id, started_at, completed_at, status, counts, mes
         )
 
 
+def record_event(connection, event_type, run_id, status, outcome=None, partition_key=None, message=None):
+    outcome = outcome or {}
+    with connection.cursor() as cursor:
+        cursor.execute(
+            'INSERT INTO audit.pipeline_run_events '
+            '(recorded_at_utc, event_type, pipeline_run_id, partition_key, status, rows_in, rows_inserted, rows_updated, rows_unchanged, message) '
+            'VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)',
+            (
+                datetime.now(timezone.utc),
+                event_type,
+                run_id,
+                partition_key,
+                status,
+                outcome.get('rows_in'),
+                outcome.get('inserted'),
+                outcome.get('updated'),
+                outcome.get('unchanged'),
+                message,
+            ),
+        )
+
+
 def load_partition(connection, df, year, month, run_id):
     outcome = upsert_curated(connection, df)
+    partition_key = f'{year:04d}-{month:02d}'
     with connection.cursor() as cursor:
         cursor.execute(
             'INSERT INTO audit.partition_loads (partition_key, loaded_at_utc, row_count, pipeline_run_id) '
             'VALUES (%s, %s, %s, %s) '
             'ON CONFLICT (partition_key) DO UPDATE SET '
             'loaded_at_utc = EXCLUDED.loaded_at_utc, row_count = EXCLUDED.row_count, pipeline_run_id = EXCLUDED.pipeline_run_id',
-            (f'{year:04d}-{month:02d}', datetime.now(timezone.utc), len(df), run_id),
+            (partition_key, datetime.now(timezone.utc), len(df), run_id),
         )
+    summary = f"inserted={outcome['inserted']} updated={outcome['updated']} unchanged={outcome['unchanged']}"
+    record_event(connection, 'partition_load', run_id, 'loaded', outcome=outcome, partition_key=partition_key, message=summary)
     return outcome

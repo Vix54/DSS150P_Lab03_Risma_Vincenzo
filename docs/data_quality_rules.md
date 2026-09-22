@@ -78,7 +78,7 @@ Versions are resolved before value rules are applied, so an older version that w
 | X-04 | `gross_amount = quantity * unit_price`, `discount_amount = gross_amount * discount_pct`, `net_amount = gross_amount - discount_amount`, using the order's own `unit_price`, decimal arithmetic and half-up rounding to 2 places | Calculate | Of 50004 orders with a matching product, 49905 have the same price as their product's latest version; all 99 that differ belong to `P0078`, so the price source changes no curated row |
 | X-05 | Add `source_updated_at`, `pipeline_run_id`, `processed_at_utc` and `record_hash` | Audit | Lab requirement |
 
-`record_hash` is the SHA-256 of the canonical JSON of these 16 columns: `order_id`, `customer_id`, `product_id`, `order_timestamp`, `customer_city`, `customer_tier`, `product_name`, `category`, `brand`, `quantity`, `unit_price`, `discount_pct`, `gross_amount`, `discount_amount`, `net_amount` and `status`. It excludes `source_updated_at`, `pipeline_run_id` and `processed_at_utc`, so a new pipeline run, or a source version that changes only `updated_at`, produces the same hash and causes no update.
+`record_hash` is the SHA-256 of the canonical JSON of these 17 columns: `order_id`, `customer_id`, `product_id`, `order_timestamp`, `customer_city`, `customer_tier`, `product_name`, `category`, `brand`, `quantity`, `unit_price`, `discount_pct`, `gross_amount`, `discount_amount`, `net_amount`, `status` and `source_updated_at`. It excludes `pipeline_run_id` and `processed_at_utc`, so a new pipeline run over unchanged source data produces the same hash and causes no update, while a new source version, even one that changes only `updated_at`, changes the hash and updates the row.
 
 ## 5. Quarantine records
 
@@ -113,3 +113,9 @@ These checks run on the curated output and are repeated after the PostgreSQL loa
 | Source files | None | `order_id`, `customer_id` and `product_id` each repeat in the raw data |
 | Staging | Unique key enforced by deduplication rules C-01, P-01 and O-01 | 3000, 600 and 50000 distinct keys |
 | Curated table | `PRIMARY KEY (order_id)` | `order_id` is unique after deduplication |
+
+## 9. Changes after the first run
+
+- `source_updated_at` was added to the columns covered by `record_hash`, so that every new source version updates the stored row and the stored `source_updated_at` never lags behind the source. Hashes computed under the earlier 16-column definition no longer pass V-10, so a curated run built before the change is refused by `load` and `validate` and must be rebuilt with a new run ID.
+- The load checks the curated output against V-01 to V-10 before it writes anything.
+- `audit.pipeline_run_events` records every load and partition load as an append-only history; `audit.pipeline_runs` and `audit.partition_loads` keep the latest outcome per key.

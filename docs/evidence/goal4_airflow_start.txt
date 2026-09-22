@@ -1,0 +1,104 @@
+2026-09-22T18:08:37Z
+ Container dss150p-airflow-init Stopping 
+ Container dss150p-airflow-webserver Stopping 
+ Container dss150p-airflow-scheduler Stopping 
+ Container dss150p-airflow-init Stopped 
+ Container dss150p-airflow-init Removing 
+ Container dss150p-airflow-webserver Stopped 
+ Container dss150p-airflow-webserver Removing 
+ Container dss150p-airflow-scheduler Stopped 
+ Container dss150p-airflow-scheduler Removing 
+ Container dss150p-airflow-init Removed 
+ Container dss150p-airflow-webserver Removed 
+ Container dss150p-airflow-scheduler Removed 
+ Container dss150p-postgres Stopping 
+ Container dss150p-postgres Stopped 
+ Container dss150p-postgres Removing 
+ Container dss150p-postgres Removed 
+ Network dss150p_lab03_risma_vincenzo_default Removing 
+ Network dss150p_lab03_risma_vincenzo_default Removed 
+ Network dss150p_lab03_risma_vincenzo_default Creating 
+ Network dss150p_lab03_risma_vincenzo_default Creating 
+ Network dss150p_lab03_risma_vincenzo_default Created 
+ Network dss150p_lab03_risma_vincenzo_default Created 
+ Container dss150p-postgres Creating 
+ Container dss150p-postgres Created 
+ Container dss150p-postgres Starting 
+ Container dss150p-postgres Started 
+dss150p-airflow-init  | [2026-09-22T18:08:57.259+0000] {override.py:1912} INFO - Created Permission View: can read on User Stats Chart
+dss150p-airflow-init  | [2026-09-22T18:08:57.264+0000] {override.py:1963} INFO - Added Permission can read on User Stats Chart to role Admin
+dss150p-airflow-init  | [2026-09-22T18:08:57.275+0000] {override.py:1912} INFO - Created Permission View: menu access on User's Statistics
+dss150p-airflow-init  | [2026-09-22T18:08:57.281+0000] {override.py:1963} INFO - Added Permission menu access on User's Statistics to role Admin
+dss150p-airflow-init  | [2026-09-22T18:08:57.305+0000] {override.py:1912} INFO - Created Permission View: can read on Permissions
+dss150p-airflow-init  | [2026-09-22T18:08:57.310+0000] {override.py:1963} INFO - Added Permission can read on Permissions to role Admin
+dss150p-airflow-init  | [2026-09-22T18:08:57.324+0000] {override.py:1912} INFO - Created Permission View: menu access on Actions
+dss150p-airflow-init  | [2026-09-22T18:08:57.329+0000] {override.py:1963} INFO - Added Permission menu access on Actions to role Admin
+dss150p-airflow-init  | [2026-09-22T18:08:57.358+0000] {override.py:1912} INFO - Created Permission View: can read on View Menus
+dss150p-airflow-init  | [2026-09-22T18:08:57.365+0000] {override.py:1963} INFO - Added Permission can read on View Menus to role Admin
+dss150p-airflow-init  | [2026-09-22T18:08:57.380+0000] {override.py:1912} INFO - Created Permission View: menu access on Resources
+dss150p-airflow-init  | [2026-09-22T18:08:57.385+0000] {override.py:1963} INFO - Added Permission menu access on Resources to role Admin
+dss150p-airflow-init  | [2026-09-22T18:08:57.405+0000] {override.py:1912} INFO - Created Permission View: can read on Permission Views
+dss150p-airflow-init  | [2026-09-22T18:08:57.410+0000] {override.py:1963} INFO - Added Permission can read on Permission Views to role Admin
+dss150p-airflow-init  | [2026-09-22T18:08:57.423+0000] {override.py:1912} INFO - Created Permission View: menu access on Permission Pairs
+dss150p-airflow-init  | [2026-09-22T18:08:57.427+0000] {override.py:1963} INFO - Added Permission menu access on Permission Pairs to role Admin
+dss150p-airflow-init  | [2026-09-22T18:08:58.096+0000] {override.py:1597} INFO - Added user admin
+dss150p-airflow-init  | User "admin" created with role "Admin"
+dss150p-airflow-init  | 2.10.5
+[Kdss150p-airflow-init exited with code 0
+ Container dss150p-postgres Running 
+ Container dss150p-airflow-webserver Creating 
+ Container dss150p-airflow-scheduler Creating 
+ Container dss150p-airflow-webserver Created 
+ Container dss150p-airflow-scheduler Created 
+ Container dss150p-postgres Waiting 
+ Container dss150p-postgres Waiting 
+ Container dss150p-postgres Healthy 
+ Container dss150p-airflow-scheduler Starting 
+ Container dss150p-postgres Healthy 
+ Container dss150p-airflow-webserver Starting 
+ Container dss150p-airflow-scheduler Started 
+ Container dss150p-airflow-webserver Started 
+NAME                        IMAGE                                            COMMAND                  SERVICE             CREATED              STATUS                        PORTS
+dss150p-airflow-scheduler   dss150p_lab03_risma_vincenzo-airflow-scheduler   "/usr/bin/dumb-init …"   airflow-scheduler   About a minute ago   Up About a minute             8080/tcp
+dss150p-airflow-webserver   dss150p_lab03_risma_vincenzo-airflow-webserver   "/usr/bin/dumb-init …"   airflow-webserver   About a minute ago   Up About a minute (healthy)   127.0.0.1:8080->8080/tcp
+dss150p-postgres            postgres:16                                      "docker-entrypoint.s…"   postgres            About a minute ago   Up About a minute (healthy)   127.0.0.1:5432->5432/tcp
+dag_id                 | fileloc                               | owners  | is_paused
+=======================+=======================================+=========+==========
+dss150p_sales_pipeline | /opt/airflow/dags/dss150p_pipeline.py | dss150p | True     
+                                                                                    
+No data found
+property_name                   | property_value                                                                         
+================================+========================================================================================
+dag_id                          | dss150p_sales_pipeline                                                                 
+dag_display_name                | dss150p_sales_pipeline                                                                 
+root_dag_id                     | None                                                                                   
+is_paused                       | True                                                                                   
+is_active                       | True                                                                                   
+is_subdag                       | False                                                                                  
+last_parsed_time                | 2026-09-22T18:09:42.852958+00:00                                                       
+last_pickled                    | None                                                                                   
+last_expired                    | None                                                                                   
+scheduler_lock                  | None                                                                                   
+pickle_id                       | None                                                                                   
+default_view                    | grid                                                                                   
+fileloc                         | /opt/airflow/dags/dss150p_pipeline.py                                                  
+file_token                      | Ii9vcHQvYWlyZmxvdy9kYWdzL2RzczE1MHBfcGlwZWxpbmUucHki.UKscyiIPRAsG7GxwSbd3XVi3rEI       
+owners                          | dss150p                                                                                
+description                     | Extract, transform, load and validate the sales order lines; all logic lives in src.cli
+schedule_interval               | {'__type': 'CronExpression', 'value': '0 2 * * *'}                                     
+timetable_description           | At 02:00                                                                               
+tags                            | {'name': 'DSS150P'}                                                                    
+max_active_tasks                | 16                                                                                     
+max_active_runs                 | 1                                                                                      
+max_consecutive_failed_dag_runs | 0                                                                                      
+has_task_concurrency_limits     | False                                                                                  
+has_import_errors               | False                                                                                  
+next_dagrun                     | 2026-09-21T02:00:00+00:00                                                              
+next_dagrun_data_interval_start | 2026-09-21T02:00:00+00:00                                                              
+next_dagrun_data_interval_end   | 2026-09-22T02:00:00+00:00                                                              
+next_dagrun_create_after        | 2026-09-22T02:00:00+00:00                                                              
+                                                                                                                         
+webserver_health_http_status=200
+               total        used        free      shared  buff/cache   available
+Mem:           7.8Gi       2.1Gi       242Mi        69Mi       5.7Gi       5.7Gi
+Swap:          4.0Gi       316Ki       4.0Gi

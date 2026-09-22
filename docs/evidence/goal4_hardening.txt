@@ -1,0 +1,106 @@
+2026-09-22T17:58:21Z
+1000
+1000
+               total        used        free      shared  buff/cache   available
+Mem:           7.8Gi       978Mi       6.5Gi        93Mi       623Mi       6.8Gi
+Swap:          4.0Gi          0B       4.0Gi
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/sdd       1007G  2.4G  954G   1% /
+docker_memory_bytes=8328429568
+airflow
+dss150p
+postgres
+template0
+template1
+drwxr-xr-x 2 enzo enzo 4096 Sep 21 22:19 dags
+drwxr-xr-x 9 enzo enzo 4096 Sep 22 05:51 data
+drwxr-xr-x 2 enzo enzo 4096 Sep 22 12:05 logs
+AIRFLOW_UID=1000
+README.md:83:| `POSTGRES_PASSWORD` | `change_me` | Required. There is no default in code or Compose files |
+commits_containing_password=0
+commits_touching_dotenv=0
+compose_config_ok
+compose_airflow_config_ok
+ Container dss150p-postgres Running 
+NAME               IMAGE         COMMAND                  SERVICE    CREATED        STATUS                  PORTS
+dss150p-postgres   postgres:16   "docker-entrypoint.s…"   postgres   14 hours ago   Up 14 hours (healthy)   127.0.0.1:5432->5432/tcp
+ Image dss150p_lab03_risma_vincenzo-pipeline Building 
+#1 [internal] load local bake definitions
+#1 reading from stdin 580B done
+#1 DONE 0.0s
+
+#2 [internal] load build definition from Dockerfile
+#2 transferring dockerfile: 307B done
+#2 DONE 0.0s
+
+#3 [internal] load metadata for docker.io/library/python:3.11-slim
+#3 ...
+
+#4 [auth] library/python:pull token for registry-1.docker.io
+#4 DONE 0.0s
+
+#3 [internal] load metadata for docker.io/library/python:3.11-slim
+#3 DONE 2.3s
+
+#5 [internal] load .dockerignore
+#5 transferring context: 200B done
+#5 DONE 0.0s
+
+#6 [internal] load build context
+#6 transferring context: 9.95kB 0.0s done
+#6 DONE 0.0s
+
+#7 [1/5] FROM docker.io/library/python:3.11-slim@sha256:da047cb8f9d1d98e5c070f5300ba9f7274e33b8fc0e5be5ed88740aed1b95ba9
+#7 resolve docker.io/library/python:3.11-slim@sha256:da047cb8f9d1d98e5c070f5300ba9f7274e33b8fc0e5be5ed88740aed1b95ba9 0.0s done
+#7 DONE 0.0s
+
+#8 [2/5] WORKDIR /app
+#8 CACHED
+
+#9 [3/5] COPY requirements.txt constraints.txt /app/
+#9 CACHED
+
+#10 [4/5] RUN pip install --no-cache-dir -r /app/requirements.txt -c /app/constraints.txt
+#10 CACHED
+
+#11 [5/5] COPY . /app
+#11 DONE 0.1s
+
+#12 exporting to image
+#12 exporting layers
+#12 exporting layers 0.4s done
+#12 exporting manifest sha256:bf68e0af379f9b83f70facd13455fb645b77a0c4195a16f05a1b4f04513aa7a2 0.0s done
+#12 exporting config sha256:5b4343497dbae20c84eb2394bb2312d216417dfb709440709e9357718908c3e0 0.0s done
+#12 exporting attestation manifest sha256:c93603ec70aa07141e0c3e9af6576a409afe0f032321be8d6e3e80b3ff482928 0.0s done
+#12 exporting manifest list sha256:73d1eed756862a178b5f6f55f69b0fa02273998d4665959b6fe338ee94d2d7c6
+#12 exporting manifest list sha256:73d1eed756862a178b5f6f55f69b0fa02273998d4665959b6fe338ee94d2d7c6 0.0s done
+#12 naming to docker.io/library/dss150p_lab03_risma_vincenzo-pipeline:latest done
+#12 unpacking to docker.io/library/dss150p_lab03_risma_vincenzo-pipeline:latest 0.1s done
+#12 DONE 0.7s
+
+#13 resolving provenance for metadata file
+#13 DONE 0.0s
+ Image dss150p_lab03_risma_vincenzo-pipeline Built 
+ Container dss150p-postgres Running 
+ Container dss150p-postgres Waiting 
+ Container dss150p-postgres Healthy 
+ Container dss150p_lab03_risma_vincenzo-pipeline-run-1a375d62e228 Creating 
+ Container dss150p_lab03_risma_vincenzo-pipeline-run-1a375d62e228 Created 
+python_version=3.11.16
+pandas==2.2.3
+pyarrow==17.0.0
+psycopg==3.2.3
+python-dotenv==1.0.1
+PyYAML==6.0.2
+project_root=/app
+db_target=postgres:5432/dss150p user=dss150p
+environment_ok=True
+exit=0
+2026-09-22T17:58:44Z INFO src.validate.stages check passed: source and raw file hashes
+2026-09-22T17:58:44Z INFO src.validate.stages check passed: row counts reconcile across layers
+2026-09-22T17:58:46Z INFO src.validate.stages check passed: curated rules V-01 to V-10
+2026-09-22T17:58:47Z INFO src.validate.stages check passed: PostgreSQL V-11, hash match, audit rows and load events
+2026-09-22T17:58:47Z INFO src.validate.stages validation of hashv2_1 passed: 4 checks, 49897 curated rows
+run_id=hashv2_1
+validation=passed checks=4 rows_checked=49897
+exit=0

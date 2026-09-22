@@ -27,8 +27,9 @@ HASH_COLUMNS = [
     'discount_amount',
     'net_amount',
     'status',
+    'source_updated_at',
 ]
-CURATED_COLUMNS = HASH_COLUMNS + ['source_updated_at', 'pipeline_run_id', 'processed_at_utc', 'record_hash']
+CURATED_COLUMNS = HASH_COLUMNS + ['pipeline_run_id', 'processed_at_utc', 'record_hash']
 
 
 def to_decimal(value, quantum):
@@ -39,6 +40,8 @@ def canonical(value):
     if isinstance(value, Decimal):
         return format(value, 'f')
     if hasattr(value, 'astimezone'):
+        if value.tzinfo is None:
+            return f'naive:{value.isoformat()}'
         return value.astimezone(timezone.utc).isoformat()
     return str(value)
 

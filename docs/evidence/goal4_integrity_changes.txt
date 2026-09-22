@@ -1,0 +1,119 @@
+2026-09-21T21:51:04Z
+You are now connected to database "dss150p" as user "dss150p".
+BEGIN
+CREATE TABLE
+CREATE INDEX
+CREATE FUNCTION
+NOTICE:  trigger "trg_events_no_update_delete" for relation "audit.pipeline_run_events" does not exist, skipping
+DROP TRIGGER
+CREATE TRIGGER
+DROP TRIGGER
+NOTICE:  trigger "trg_events_no_truncate" for relation "audit.pipeline_run_events" does not exist, skipping
+CREATE TRIGGER
+COMMIT
+                                                Table "audit.pipeline_run_events"
+     Column      |           Type           | Collation | Nullable |                           Default                           
+-----------------+--------------------------+-----------+----------+-------------------------------------------------------------
+ event_id        | bigint                   |           | not null | nextval('audit.pipeline_run_events_event_id_seq'::regclass)
+ recorded_at_utc | timestamp with time zone |           | not null | 
+ event_type      | text                     |           | not null | 
+ pipeline_run_id | text                     |           | not null | 
+ partition_key   | text                     |           |          | 
+ status          | text                     |           | not null | 
+ rows_in         | integer                  |           |          | 
+ rows_inserted   | integer                  |           |          | 
+ rows_updated    | integer                  |           |          | 
+ rows_unchanged  | integer                  |           |          | 
+ message         | text                     |           |          | 
+Indexes:
+    "pipeline_run_events_pkey" PRIMARY KEY, btree (event_id)
+    "idx_run_events_run" btree (pipeline_run_id, recorded_at_utc)
+Check constraints:
+    "pipeline_run_events_event_type_check" CHECK (event_type = ANY (ARRAY['load'::text, 'partition_load'::text]))
+    "pipeline_run_events_status_check" CHECK (status = ANY (ARRAY['loaded'::text, 'failed'::text]))
+Triggers:
+    trg_events_no_truncate BEFORE TRUNCATE ON audit.pipeline_run_events FOR EACH STATEMENT EXECUTE FUNCTION audit.reject_event_change()
+    trg_events_no_update_delete BEFORE DELETE OR UPDATE ON audit.pipeline_run_events FOR EACH ROW EXECUTE FUNCTION audit.reject_event_change()
+
+..................................................                       [100%]
+50 passed in 2.37s
+2026-09-21T21:51:08Z INFO src.validate.stages check passed: source and raw file hashes
+2026-09-21T21:51:08Z INFO src.validate.stages check passed: row counts reconcile across layers
+2026-09-21T21:51:09Z ERROR src.validate.stages check failed: curated rules V-01 to V-10 (1 finding(s))
+2026-09-21T21:51:11Z ERROR src.validate.stages check failed: PostgreSQL V-11, hash match, audit rows and load events (2 finding(s))
+2026-09-21T21:51:11Z ERROR cli [validate] 3 validation finding(s): V-10 record_hash differs from the hash recomputed from the row: 49897 row(s), e.g. O0000001, O0000002, O0000003 | 49897 stored row(s) no longer match their own record_hash, e.g. O0000002, O0000003, O0000004 | audit.pipeline_run_events has no successful load event for cleanroom_1
+exit=1
+2026-09-21T21:51:13Z ERROR cli [load] curated output run_id=cleanroom_1 fails the pre-load checks and was not loaded; rebuild it with a new run ID: V-10 record_hash differs from the hash recomputed from the row: 49897 row(s), e.g. O0000001, O0000002, O0000003
+exit=1
+2026-09-21T21:51:14Z INFO src.extract.files copied customers.csv (351125 bytes)
+2026-09-21T21:51:14Z INFO src.extract.files copied products.json (160497 bytes)
+2026-09-21T21:51:14Z INFO src.extract.files copied orders.csv (4856331 bytes)
+2026-09-21T21:51:14Z INFO src.extract.files raw snapshot run_id=hashv2_1 complete with 3 files
+2026-09-21T21:51:14Z INFO src.transform.stages customers: raw=3003 superseded=3 quarantined=0 staged=3000
+2026-09-21T21:51:14Z INFO src.transform.stages products: raw=601 superseded=1 quarantined=1 staged=599
+2026-09-21T21:51:14Z INFO src.transform.stages orders: raw=50005 superseded=5 quarantined=2 staged=49998
+2026-09-21T21:51:16Z INFO src.transform.stages curated: orders_staged=49998 curated=49897 quarantined=101 reasons={'order_product_quarantined': 99, 'order_customer_not_found': 1, 'order_product_not_found': 1}
+2026-09-21T21:51:19Z INFO src.load.stages load hashv2_1: rows_in=49897 inserted=0 updated=49897 unchanged=0
+2026-09-21T21:51:19Z INFO src.validate.stages check passed: source and raw file hashes
+2026-09-21T21:51:19Z INFO src.validate.stages check passed: row counts reconcile across layers
+2026-09-21T21:51:21Z INFO src.validate.stages check passed: curated rules V-01 to V-10
+2026-09-21T21:51:22Z INFO src.validate.stages check passed: PostgreSQL V-11, hash match, audit rows and load events
+2026-09-21T21:51:22Z INFO src.validate.stages validation of hashv2_1 passed: 4 checks, 49897 curated rows
+run_id=hashv2_1
+load: inserted=0 updated=49897 unchanged=0
+validation=passed checks=4 rows_checked=49897
+exit=0
+2026-09-21T21:51:23Z INFO src.extract.files raw snapshot run_id=hashv2_1 is already complete and verified; nothing to copy
+2026-09-21T21:51:23Z INFO src.transform.stages staging run_id=hashv2_1 is already complete; nothing to do
+2026-09-21T21:51:23Z INFO src.transform.stages curated run_id=hashv2_1 is already complete; nothing to do
+2026-09-21T21:51:25Z INFO src.load.stages load hashv2_1: rows_in=49897 inserted=0 updated=0 unchanged=49897
+2026-09-21T21:51:26Z INFO src.validate.stages check passed: source and raw file hashes
+2026-09-21T21:51:26Z INFO src.validate.stages check passed: row counts reconcile across layers
+2026-09-21T21:51:27Z INFO src.validate.stages check passed: curated rules V-01 to V-10
+2026-09-21T21:51:29Z INFO src.validate.stages check passed: PostgreSQL V-11, hash match, audit rows and load events
+2026-09-21T21:51:29Z INFO src.validate.stages validation of hashv2_1 passed: 4 checks, 49897 curated rows
+run_id=hashv2_1
+load: inserted=0 updated=0 unchanged=49897
+validation=passed checks=4 rows_checked=49897
+exit=0
+2026-09-21T21:51:30Z INFO src.load.partitions rebuilt the partitioned dataset from run hashv2_1
+2026-09-21T21:51:30Z INFO src.load.partitions partition 2026-01 loaded from run hashv2_1: rows_in=2506 inserted=0 updated=0 unchanged=2506
+partition=2026-01 source_run_id=hashv2_1
+rows_in=2506 inserted=0 updated=0 unchanged=2506
+exit=0
+2026-09-21T21:51:30Z INFO src.validate.stages check passed: source and raw file hashes
+2026-09-21T21:51:30Z INFO src.validate.stages check passed: row counts reconcile across layers
+2026-09-21T21:51:32Z INFO src.validate.stages check passed: curated rules V-01 to V-10
+2026-09-21T21:51:32Z INFO src.validate.stages check passed: PostgreSQL V-11, hash match, audit rows and load events for partition 2026-01
+2026-09-21T21:51:32Z INFO src.validate.stages validation of hashv2_1 passed: 4 checks, 49897 curated rows
+run_id=hashv2_1
+validation=passed checks=4 rows_checked=49897
+exit=0
+2026-09-21T21:51:33Z ERROR cli [validate] --year and --month must be given together
+exit=1
+ERROR:  audit.pipeline_run_events is append-only
+CONTEXT:  PL/pgSQL function audit.reject_event_change() line 3 at RAISE
+ERROR:  audit.pipeline_run_events is append-only
+CONTEXT:  PL/pgSQL function audit.reject_event_change() line 3 at RAISE
+ERROR:  audit.pipeline_run_events is append-only
+CONTEXT:  PL/pgSQL function audit.reject_event_change() line 3 at RAISE
+ event_id |   event_type   | pipeline_run_id | partition_key | status | rows_in | rows_inserted | rows_updated | rows_unchanged 
+----------+----------------+-----------------+---------------+--------+---------+---------------+--------------+----------------
+        1 | load           | hashv2_1        |               | loaded |   49897 |             0 |        49897 |              0
+        2 | load           | hashv2_1        |               | loaded |   49897 |             0 |            0 |          49897
+        3 | partition_load | hashv2_1        | 2026-01       | loaded |    2506 |             0 |            0 |           2506
+(3 rows)
+
+ partition_key |         loaded_at_utc         | row_count | pipeline_run_id 
+---------------+-------------------------------+-----------+-----------------
+ 2026-01       | 2026-09-21 21:51:30.157771+00 |      2506 | hashv2_1
+(1 row)
+
+ total | distinct_orders 
+-------+-----------------
+ 49897 |           49897
+(1 row)
+
+data/source/customers.csv: OK
+data/source/orders.csv: OK
+data/source/products.json: OK
