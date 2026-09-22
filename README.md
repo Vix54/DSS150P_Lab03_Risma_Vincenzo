@@ -5,7 +5,7 @@ Author: Vincenzo Risma
 
 ## 1. Overview
 
-This repository implements an e-commerce sales pipeline that converts three source files (`customers.csv`, `products.json`, `orders.csv`) into a curated sales-order-line dataset in PostgreSQL. The design separates raw snapshots, staging, curated output and quarantined records. It is reproducible, safe to rerun and validated after every run. It also benchmarks CSV, JSON Lines, Parquet and PostgreSQL on the curated data, writes a partitioned Parquet dataset and can load a single monthly partition. Apache Airflow orchestration is planned for the next goal.
+This repository implements an e-commerce sales pipeline that converts three source files (`customers.csv`, `products.json`, `orders.csv`) into a curated sales-order-line dataset in PostgreSQL. The design separates raw snapshots, staging, curated output and quarantined records. It is reproducible, safe to rerun and validated after every run. It also benchmarks CSV, JSON Lines, Parquet and PostgreSQL on the curated data, writes a partitioned Parquet dataset and can load a single monthly partition. Apache Airflow coordinates the full pipeline, including a parameterized partition mode and a demonstrated failure-and-recovery path.
 
 ## 2. Current Status
 
@@ -14,7 +14,7 @@ This repository implements an e-commerce sales pipeline that converts three sour
 | 1 | Reproducible environment, externalized configuration, Docker Compose | Complete |
 | 2 | Raw, staging, curated and quarantine layers; audit; rerun-safe PostgreSQL load; validation | Complete |
 | 3 | Storage format benchmark, partitioned Parquet, selected-partition load | Complete |
-| 4 | Airflow DAG with schedule, parameters, retries and failure recovery | Not started |
+| 4 | Airflow DAG with schedule, parameters, retries and failure recovery | Complete |
 
 ## 3. Tested Environment
 
@@ -223,7 +223,98 @@ The same command deletes and rewrites `data/partitioned/` as Parquet partitioned
 
 `load-partition` uses the newest complete curated run unless `--run-id` is given. It rebuilds `data/partitioned/` from that run if the dataset came from another run, reads one partition, checks that every row belongs to that month and passes rules V-01 to V-10, upserts the rows, and refreshes the `audit.partition_loads` row for the key `YYYY-MM` and appends an event in the same transaction. It stops with an error if the partition does not exist. Running it again changes nothing. `python -m src.cli validate --year 2026 --month 1` then checks that month against the database.
 
-## 7. Data Rules and Results
+## 7. Orchestration with Apache Airflow (Goal 4)
+
+Airflow coordinates the same four CLI stages under one run ID; it holds no business logic itself.
+
+### 7.1 Start Airflow
+
+```
+docker compose -f docker-compose.yml -f docker-compose.airflow.yml up airflow-init
+docker compose -f docker-compose.yml -f docker-compose.airflow.yml up -d airflow-webserver airflow-scheduler
+docker compose -f docker-compose.yml -f docker-compose.airflow.yml ps
+```
+
+`airflow-init` runs the metadata database migration and creates the `admin` user through Airflow's own `_AIRFLOW_DB_MIGRATE` and `_AIRFLOW_WWW_USER_CREATE` environment variables, then exits with code 0. Wait for `airflow-webserver` to report `healthy`, then open http://localhost:8080 (training credentials `admin`/`admin`). Both PostgreSQL and the Airflow UI are bound to `127.0.0.1` only, never published on the network.
+
+### 7.2 Container names
+
+| Name | Source | Notes |
+|---|---|---|
+| `dss150p-airflow-init` | `airflow-init` service | Runs the metadata migration and creates the admin user, then exits with code 0 |
+| `dss150p-airflow-webserver` | `airflow-webserver` service | Publishes the UI on `127.0.0.1:8080` |
+| `dss150p-airflow-scheduler` | `airflow-scheduler` service | Triggers scheduled and manually queued runs |
+
+All three run as `${AIRFLOW_UID}:0` (set in `.env`, matching the host user), so files the containers write under the bind-mounted `logs/` and `dags/` folders are not owned by root.
+
+### 7.3 DAG configuration
+
+`dags/dss150p_pipeline.py` defines `dss150p_sales_pipeline`:
+
+| Requirement | Implementation |
+|---|---|
+| Schedule | `0 2 * * *`, daily at 02:00 UTC |
+| Catchup | `False`. The pipeline processes the current contents of `data/source/`, not a historical data interval, so catching up from the start date would rerun the same current snapshot many times over (see section 7.6) |
+| Parameters | `run_mode` (`full` or `partition`), `year`, `month` |
+| Dependencies | `extract >> transform >> load >> validate` |
+| Retries | 2, with a 1-minute delay |
+| Timeout | 10 minutes per task, 45 minutes per DAG run |
+| Failure handling | `on_failure_callback` and `on_retry_callback` print the task, run ID, attempt number, parameters and error, and append one JSON line to `logs/dss150p_failures.jsonl` (git-ignored) |
+| Run identity | Every task receives `PIPELINE_RUN_ID={{ run_id }}`, so one Airflow run ID becomes the `pipeline_run_id` recorded in `audit.pipeline_runs`, `audit.partition_loads` and `audit.pipeline_run_events` for every task in that run |
+| Business logic separation | Every task is a `python -m src.cli …` call; the DAG file contains no transformation rules |
+
+### 7.4 Running the DAG
+
+Full mode:
+
+```
+docker compose -f docker-compose.yml -f docker-compose.airflow.yml exec -T airflow-scheduler airflow dags unpause dss150p_sales_pipeline
+docker compose -f docker-compose.yml -f docker-compose.airflow.yml exec -T airflow-scheduler airflow dags trigger dss150p_sales_pipeline --run-id manual_full_1
+```
+
+Partition mode passes `run_mode`, `year` and `month` through `--conf`. `extract` and `transform` always run; `load` and `validate` branch on `run_mode`:
+
+```
+docker compose -f docker-compose.yml -f docker-compose.airflow.yml exec -T airflow-scheduler airflow dags trigger dss150p_sales_pipeline --run-id manual_partition_1 --conf '{"run_mode":"partition","year":2026,"month":1}'
+```
+
+Unpausing a daily DAG with `catchup=False` immediately queues one run for the most recent interval, in addition to any run explicitly triggered; both appear in the Grid view.
+
+### 7.5 Deliberate failure and recovery
+
+```
+mv data/source/orders.csv data/source/orders.csv.bak
+docker compose -f docker-compose.yml -f docker-compose.airflow.yml exec -T airflow-scheduler airflow dags trigger dss150p_sales_pipeline --run-id manual_failure_1
+```
+
+`extract` fails on the missing source file, retries twice more per the retry policy, then fails; `transform`, `load` and `validate` are marked `upstream_failed` without running, so no partial data reaches PostgreSQL. Restoring the file and clearing the failed task reruns only what failed:
+
+```
+mv data/source/orders.csv.bak data/source/orders.csv
+sha256sum -c docs/evidence/source_sha256.txt
+docker compose -f docker-compose.yml -f docker-compose.airflow.yml exec -T airflow-scheduler airflow tasks clear dss150p_sales_pipeline --only-failed --downstream --yes
+```
+
+Every step here is safe to rerun: `extract` re-copies the source files idempotently, `transform` and `load` are hash-guarded, and `validate` is read-only, so clearing and rerunning after a failure cannot create duplicate rows or leave `curated.sales_order_lines` partially loaded.
+
+### 7.6 Backfilling a historical month
+
+If this DAG normally ran daily and a historical month needed to be filled in, the correct Airflow mechanism is a backfill (`airflow dags backfill -s START -e END dss150p_sales_pipeline`), which creates one DAG run per missing data interval rather than a single run covering the whole month. This pipeline is an imperfect fit for interval-based backfill in the usual sense: `extract` and `transform` always operate on whatever is currently in `data/source/`, not on data scoped to a particular date, so backfilling 30 daily intervals would extract and transform the same current snapshot 30 times over rather than 30 distinct historical snapshots. The tool that actually reprocesses a specific historical period here is `run_mode=partition` with `year`/`month`, since `load-partition` reads an already-partitioned slice and loads only that month.
+
+Either way, what prevents double loads is not the orchestrator skipping already-run intervals; it is `record_hash` at the data layer. A row is written only when its business content differs from what is already stored, so backfilling over unchanged data reports `inserted=0 updated=0` rather than creating duplicates, regardless of how many times a given interval or partition is rerun (section 7.7: every rerun of unchanged content, across the CLI, the full DAG run and the partition DAG run, reports `unchanged=N`, never a duplicate insert). `max_active_runs=1` complements this by preventing two backfilled runs from writing to `curated.sales_order_lines` at the same time; it protects against concurrent writes, not against reprocessing the same interval twice.
+
+### 7.7 Airflow evidence summary
+
+| Run | Mode | Result |
+|---|---|---|
+| `manual_full_1` | full | All 4 tasks succeeded; `inserted=0 updated=0 unchanged=49897` |
+| `manual_partition_1` | partition, 2026-01 | All 4 tasks succeeded; `audit.partition_loads` shows 2506 rows |
+| `manual_failure_1` | full, `orders.csv` removed | `extract` failed after 2 retries; `transform`/`load`/`validate` `upstream_failed`; 3 failure-callback entries logged |
+| `manual_failure_1` (recovery) | full, source restored | All 4 tasks succeeded after `tasks clear`; `total = distinct_orders = 49897` |
+
+Full command output is in `docs/evidence/goal4_hardening.txt`, `goal4_airflow_start.txt`, `goal4_full_run.txt`, `goal4_partition_run.txt`, `goal4_failure.txt` and `goal4_recovery.txt`. UI screenshots (Grid and Graph views, a task log, the DAG before and after recovery) are in `docs/screenshots/`.
+
+## 8. Data Rules and Results
 
 The rules are listed with their evidence in `docs/data_quality_rules.md`: latest version per business key, text normalization, UTC timestamps, quarantine reasons, exact decimal amounts with half-up rounding, and the columns covered by `record_hash`. Counts from the verified run:
 
@@ -236,7 +327,7 @@ The rules are listed with their evidence in `docs/data_quality_rules.md`: latest
 
 The curated layer holds 49897 rows, and the curated stage quarantined 101 more orders (99 whose product was rejected, 1 with an unknown customer and 1 with an unknown product). The quarantine total is 104 records.
 
-### 7.1 Storage benchmark summary
+### 8.1 Storage benchmark summary
 
 Medians of 5 runs on the tested machine, for the 49,897 curated rows (the full method, results and interpretation are in `docs/benchmark_report.md`). These are measurements from one machine, not general claims.
 
@@ -251,7 +342,7 @@ Medians of 5 runs on the tested machine, for the 49,897 curated rows (the full m
 
 Reading one of the 21 monthly partitions (2,506 rows) took 0.0153 s against 0.1218 s for the whole partitioned dataset.
 
-## 8. Testing
+## 9. Testing
 
 ```
 python -m pytest -q
@@ -259,30 +350,33 @@ python -m pytest -q
 
 The 50 unit tests need no database. They cover run IDs, raw extraction, staging rules, the curated join and amounts, `record_hash`, the validation rules and integrity checks, error wrapping, the benchmark timing helper, format round trips and partition handling. `load`, `validate`, `benchmark` and `load-partition` need the PostgreSQL container running.
 
-## 9. Configuration Model
+## 10. Configuration Model
 
 - `config/settings.yml` holds non-secret defaults: the directory for each data layer, the source file list, allowed order statuses, quantity bounds, benchmark settings and the selected partition.
 - `.env` holds environment-specific and secret values. Only `.env.example`, with a placeholder, is committed.
 - `src/config.py` is the single place that reads both sources. It raises an error when a required database variable is missing instead of falling back to a default.
 - `docker-compose.yml` fails at startup when `POSTGRES_PASSWORD` is unset.
 
-## 10. Repository Layout
+## 11. Repository Layout
 
 ```
 .
 ├── config/settings.yml
+├── constraints.txt              pip freeze of the pipeline image, used with requirements.txt
 ├── dags/dss150p_pipeline.py
 ├── data/
 │   ├── source/                  source files (tracked, never modified)
 │   └── benchmarks/              benchmark results (tracked); files/ is generated
 ├── docs/
 │   ├── evidence/                command output recorded for each goal
+│   ├── screenshots/             Airflow UI evidence for Goal 4
 │   ├── benchmark_report.md
 │   ├── data_quality_rules.md
 │   ├── technical_answers.md
 │   └── run_evidence.md
+├── logs/                        Airflow task logs and the failure-callback log (generated, git-ignored)
 ├── scripts/profile_sources.py   read-only source profiling
-├── sql/init/                    database bootstrap and constraints
+├── sql/init/                    database bootstrap, constraints and the audit events table
 ├── src/
 │   ├── common/                  run IDs, hashing, errors, logging, environment check
 │   ├── extract/  transform/  load/  validate/
@@ -297,7 +391,7 @@ The 50 unit tests need no database. They cover run IDs, raw extraction, staging 
 └── .env.example  .gitignore  .dockerignore
 ```
 
-## 11. Evidence
+## 12. Evidence
 
 | File | Content |
 |---|---|
@@ -325,6 +419,14 @@ The 50 unit tests need no database. They cover run IDs, raw extraction, staging 
 | `data/benchmarks/benchmark_results.csv` | Benchmark medians per storage system |
 | `data/benchmarks/benchmark_details.json` | All runs, plans, sizes and partition figures |
 | `docs/benchmark_report.md` | Benchmark methodology, results and interpretation |
+| `docs/evidence/goal4_integrity_changes.txt` | `source_updated_at` added to `record_hash`, the append-only `audit.pipeline_run_events` table and its triggers, the pre-load integrity gate |
+| `docs/evidence/goal4_hardening.txt` | Pre-flight checks, password-history scan, hardened compose config validation, container build |
+| `docs/evidence/goal4_airflow_start.txt` | Airflow containers built and started, DAG imported with no errors, webserver health check |
+| `docs/evidence/goal4_full_run.txt` | Manual full-mode DAG run, all 4 tasks, run identity in the audit tables |
+| `docs/evidence/goal4_partition_run.txt` | Manual partition-mode DAG run (2026-01), `audit.partition_loads` |
+| `docs/evidence/goal4_failure.txt` | Deliberate failure: retries, `upstream_failed` states, failure-callback log |
+| `docs/evidence/goal4_recovery.txt` | Source restored, SHA-256 verified, failed task cleared, full recovery |
+| `docs/screenshots/` | Airflow UI evidence: Grid and Graph views, task logs, before/after recovery |
 
 To confirm the source files are unchanged:
 
@@ -332,19 +434,20 @@ To confirm the source files are unchanged:
 sha256sum -c docs/evidence/source_sha256.txt
 ```
 
-## 12. Command-Line Interface
+## 13. Command-Line Interface
 
 | Command | Status |
 |---|---|
 | `validate-env`, `extract`, `transform`, `load`, `validate`, `run-all`, `benchmark`, `load-partition` | Implemented |
 
-## 13. Known Limitations
+## 14. Known Limitations
 
 - The load decides whether a row changed by comparing `record_hash` values. A row edited directly in PostgreSQL without updating its hash looks unchanged to the load; `validate` detects it by recomputing the hash from the stored values.
 - Only `validate-env` has been verified inside the pipeline container. Files written by a container into the bind-mounted `data/` folder would be owned by root.
 - Benchmark timings are warm-cache measurements from one machine and one dataset of about 14 MB, so small differences fall within run-to-run variation.
+- `extract` and `transform` always process the current contents of `data/source/`; the DAG has no notion of a historical data interval distinct from "now" (see section 7.6 on backfilling).
 
-## 14. Troubleshooting
+## 15. Troubleshooting
 
 | Symptom | Likely cause | Resolution |
 |---|---|---|
@@ -361,6 +464,8 @@ sha256sum -c docs/evidence/source_sha256.txt
 | `ERROR cli [transform] several versions share the greatest updated_at` | Two versions of one record have the same `updated_at`, and the pipeline refuses to guess | Resolve the tie in the source data or amend the rule in `docs/data_quality_rules.md` |
 | `ERROR cli [validate] … no longer match their own record_hash` | A stored row was edited outside the pipeline | Inspect the row; to let the load repair it, set its `record_hash` to a different value and run `load` again |
 | `ERROR cli [benchmark] --repeats must be at least 5` | `--repeats` was set below the minimum needed for a meaningful median | Use `--repeats 5` or more |
-| `ERROR cli [load] … fails the pre-load checks and was not loaded` | The curated output is stale, for example built under an older hash definition, or was altered | Rebuild it with `python -m src.cli run-all --run-id NEW_ID` |
-| `ERROR cli [validate] … does not exist; apply sql/init/03_audit_events.sql` | The audit events table is missing from an older volume | Apply the script as shown in section 5.4 |
+| `ERROR cli [load-partition] no partitioned dataset found` | `benchmark` has not written `data/partitioned/` yet | Run `python -m src.cli benchmark --repeats 5` first |
 | `ERROR cli [load-partition] partition … does not exist or has no rows` | No orders fall in that year and month | Choose a month listed under `data/partitioned/` |
+| `airflow.exceptions.AirflowConfigException: The user that Airflow is running as has no username` | `entrypoint` was overridden, skipping the image's own user-setup step that the `${AIRFLOW_UID}:0` user line depends on | Let the image's default entrypoint run; configure `airflow-init` through `_AIRFLOW_DB_MIGRATE` and `_AIRFLOW_WWW_USER_CREATE` environment variables instead of a custom `command` |
+| `service "airflow-scheduler" is not running` right after `up -d` | `airflow-init` did not complete the database migration | Check `docker compose -f docker-compose.yml -f docker-compose.airflow.yml logs airflow-init` for the actual failure, fix it, then rerun `up airflow-init` before starting the webserver and scheduler |
+| Airflow webserver health check returns `000` | The webserver has not finished starting, or `airflow-init` never migrated the database | Wait longer (`sleep 60`+ after `up -d`) and recheck; if it persists, inspect `airflow-init`'s log |
