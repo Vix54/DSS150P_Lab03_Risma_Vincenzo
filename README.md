@@ -61,7 +61,7 @@ The `--seed` flag installs pip inside the environment. Then install the pinned d
 
 ```
 python -m pip install --upgrade pip
-pip install -r requirements-dev.txt
+pip install -r requirements-dev.txt -c constraints.txt
 ```
 
 The `.venv` directory is machine-specific and reproducible from the requirements files, so it is excluded from Git and from the Docker build context.
