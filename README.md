@@ -372,7 +372,9 @@ The 50 unit tests need no database. They cover run IDs, raw extraction, staging 
 │   ├── screenshots/             Airflow UI evidence for Goal 4
 │   ├── benchmark_report.md
 │   ├── data_quality_rules.md
-│   ├── technical_answers.md
+│   ├── technical_questions.docx  answers to the 8 brief questions
+│   ├── technical_reflection.md
+│   ├── ai_disclosure.docx
 │   └── run_evidence.md
 ├── logs/                        Airflow task logs and the failure-callback log (generated, git-ignored)
 ├── scripts/profile_sources.py   read-only source profiling
