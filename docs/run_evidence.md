@@ -19,10 +19,10 @@
 - Error-handling evidence: an unreachable database and a missing curated run each stop the stage with a message naming the stage and exit code 1 (`docs/evidence/goal2_load.txt`, `docs/evidence/goal2_validate_runall.txt`); the unit tests in `tests/` cover missing sources, tampered snapshots, tied versions and unexpected exceptions.
 
 ## Week 6
-- Benchmark table attached: yes/no
-- Partition selected:
-- Partition row count:
-- PostgreSQL verification query:
+- Benchmark table attached: yes (`data/benchmarks/benchmark_results.csv`, `data/benchmarks/benchmark_details.json`)
+- Partition selected: `order_year=2026, order_month=1`
+- Partition row count: 2506
+- PostgreSQL verification query: `SELECT COUNT(*) FROM curated.sales_order_lines WHERE order_timestamp >= '2026-01-01' AND order_timestamp < '2026-02-01';` → 2506, matching the partition read (`docs/evidence/goal3_benchmark.txt`)
 
 ## Week 7
 - DAG ID: `dss150p_sales_pipeline` (`dags/dss150p_pipeline.py`)

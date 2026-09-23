@@ -88,9 +88,9 @@ def test_partitions_are_named_by_utc_year_and_month_and_rewriting_is_idempotent(
     df = sample_curated()
     root = tmp_path / 'partitioned'
     write_partitioned_parquet(df, root, 'run_a')
-    first = sorted(str(path.relative_to(root)) for path in parquet_files(root))
+    first = sorted(path.relative_to(root).as_posix() for path in parquet_files(root))
     write_partitioned_parquet(df, root, 'run_a')
-    second = sorted(str(path.relative_to(root)) for path in parquet_files(root))
+    second = sorted(path.relative_to(root).as_posix() for path in parquet_files(root))
     assert first == second == [
         'order_year=2025/order_month=1/part-0.parquet',
         'order_year=2025/order_month=2/part-0.parquet',
